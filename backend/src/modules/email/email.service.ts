@@ -1,0 +1,272 @@
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import * as nodemailer from 'nodemailer';
+import { EmailTemplate, EmailTemplateType } from './entities/email-template.entity';
+
+@Injectable()
+export class EmailService implements OnModuleInit {
+  private transporter: nodemailer.Transporter;
+
+  constructor(
+    @InjectRepository(EmailTemplate)
+    private templateRepository: Repository<EmailTemplate>,
+    private configService: ConfigService,
+  ) {
+    const smtpHost = this.configService.get('SMTP_HOST');
+    const smtpPort = parseInt(this.configService.get('SMTP_PORT') || '587');
+    const smtpUser = this.configService.get('SMTP_USER');
+    const smtpPass = this.configService.get('SMTP_PASS');
+
+    console.log('📧 SMTP Configuration:');
+    console.log(`   Host: ${smtpHost}`);
+    console.log(`   Port: ${smtpPort}`);
+    console.log(`   User: ${smtpUser}`);
+    console.log(`   Pass: ${smtpPass ? '****' + smtpPass.slice(-4) : 'NOT SET'}`);
+
+    // Initialize nodemailer transporter
+    this.transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465, // true for 465, false for other ports
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
+      tls: {
+        rejectUnauthorized: false, // Accept self-signed certificates
+      },
+      debug: true, // Enable debug output
+      logger: true, // Log to console
+    });
+  }
+
+  async onModuleInit() {
+    // Verify SMTP connection on startup
+    try {
+      await this.transporter.verify();
+      console.log('✅ SMTP connection verified successfully!');
+    } catch (error) {
+      console.error('❌ SMTP connection failed:', error.message);
+    }
+  }
+
+  async testConnection() {
+    try {
+      await this.transporter.verify();
+      return { success: true, message: 'SMTP connection successful' };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  }
+
+  async sendEmail(to: string, templateType: EmailTemplateType, variables: Record<string, string>) {
+    const template = await this.templateRepository.findOne({
+      where: { type: templateType, isActive: true },
+    });
+
+    if (!template) {
+      console.warn(`Email template ${templateType} not found, using default`);
+      // Send without template
+      return this.sendRawEmail(to, 'Notification', `<p>${JSON.stringify(variables)}</p>`);
+    }
+
+    // Replace variables in template
+    let htmlContent = template.htmlContent;
+    let subject = template.subject;
+
+    Object.entries(variables).forEach(([key, value]) => {
+      htmlContent = htmlContent.replace(new RegExp(`{{${key}}}`, 'g'), value);
+      subject = subject.replace(new RegExp(`{{${key}}}`, 'g'), value);
+    });
+
+    return this.sendRawEmail(to, subject, htmlContent);
+  }
+
+  async sendRawEmail(to: string, subject: string, htmlContent: string) {
+    try {
+      const fromEmail = this.configService.get('SMTP_FROM') || this.configService.get('SMTP_USER');
+      
+      console.log(`📨 Attempting to send email to: ${to}`);
+      console.log(`📧 Subject: ${subject}`);
+      console.log(`👤 From: ${fromEmail}`);
+      
+      const info = await this.transporter.sendMail({
+        from: `"Crypto Recovery Platform" <${fromEmail}>`,
+        to,
+        subject,
+        html: htmlContent,
+      });
+
+      console.log(`✅ Email sent successfully to ${to}`);
+      console.log(`📬 Message ID: ${info.messageId}`);
+      console.log(`📊 Response: ${info.response}`);
+      
+      return { success: true, message: 'Email sent successfully', messageId: info.messageId };
+    } catch (error) {
+      console.error(`❌ Failed to send email to ${to}`);
+      console.error(`🔴 Error Message: ${error.message}`);
+      console.error(`🔴 Error Code: ${error.code}`);
+      console.error(`🔴 Full Error:`, error);
+      
+      return { success: false, message: error.message, error: error.code };
+    }
+  }
+
+  async sendVerificationEmail(to: string, firstName: string, verificationLink: string) {
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
+          .button { display: inline-block; background: #667eea; color: white; padding: 14px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+          .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔐 Verify Your Email</h1>
+          </div>
+          <div class="content">
+            <h2>Hello ${firstName}!</h2>
+            <p>Thank you for registering with Crypto Recovery Platform. To complete your registration and access your account, please verify your email address.</p>
+            <p style="text-align: center;">
+              <a href="${verificationLink}" class="button">Verify Email Address</a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; background: #e5e7eb; padding: 10px; border-radius: 5px; font-size: 14px;">${verificationLink}</p>
+            <p><strong>This link will expire in 24 hours.</strong></p>
+            <p>If you didn't create an account, you can safely ignore this email.</p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} Crypto Recovery Platform. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    return this.sendRawEmail(to, 'Verify Your Email - Crypto Recovery Platform', htmlContent);
+  }
+
+  async sendPasswordResetEmail(to: string, firstName: string, resetLink: string) {
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
+          .button { display: inline-block; background: #f59e0b; color: white; padding: 14px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+          .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+          .warning { background: #fef3c7; border: 1px solid #f59e0b; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔑 Password Reset Request</h1>
+          </div>
+          <div class="content">
+            <h2>Hello ${firstName}!</h2>
+            <p>We received a request to reset your password for your Crypto Recovery Platform account.</p>
+            <p style="text-align: center;">
+              <a href="${resetLink}" class="button">Reset My Password</a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; background: #e5e7eb; padding: 10px; border-radius: 5px; font-size: 14px;">${resetLink}</p>
+            <p><strong>This link will expire in 1 hour.</strong></p>
+            <div class="warning">
+              <strong>⚠️ Security Notice:</strong> If you didn't request this password reset, please ignore this email. Your password will remain unchanged.
+            </div>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} Crypto Recovery Platform. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    return this.sendRawEmail(to, 'Reset Your Password - Crypto Recovery Platform', htmlContent);
+  }
+
+  async findAllTemplates() {
+    return this.templateRepository.find({ order: { type: 'ASC' } });
+  }
+
+  async findTemplate(id: string) {
+    const template = await this.templateRepository.findOne({ where: { id } });
+    if (!template) throw new NotFoundException('Template not found');
+    return template;
+  }
+
+  async updateTemplate(id: string, updateData: Partial<EmailTemplate>) {
+    const template = await this.findTemplate(id);
+    Object.assign(template, updateData);
+    return this.templateRepository.save(template);
+  }
+
+  async createTemplate(templateData: Partial<EmailTemplate>) {
+    const template = this.templateRepository.create(templateData);
+    return this.templateRepository.save(template);
+  }
+
+  async seedDefaultTemplates() {
+    const defaultTemplates = [
+      {
+        type: EmailTemplateType.WELCOME,
+        name: 'Welcome Email',
+        subject: 'Welcome to Crypto Recovery Platform',
+        htmlContent: '<h1>Welcome {{firstName}}!</h1><p>Thank you for joining our platform.</p>',
+      },
+      {
+        type: EmailTemplateType.PASSWORD_RESET,
+        name: 'Password Reset',
+        subject: 'Reset Your Password',
+        htmlContent: '<h1>Password Reset</h1><p>Click <a href="{{resetLink}}">here</a> to reset your password.</p>',
+      },
+      {
+        type: EmailTemplateType.CASE_CREATED,
+        name: 'Case Created',
+        subject: 'Your Recovery Case Has Been Created',
+        htmlContent: '<h1>Case Created</h1><p>Your case #{{caseId}} has been created and is under review.</p>',
+      },
+      {
+        type: EmailTemplateType.CASE_STATUS_UPDATE,
+        name: 'Case Status Update',
+        subject: 'Case Status Update',
+        htmlContent: '<h1>Case Update</h1><p>Your case #{{caseId}} status has been updated to: {{status}}</p>',
+      },
+      {
+        type: EmailTemplateType.TICKET_CREATED,
+        name: 'Ticket Created',
+        subject: 'Support Ticket Created',
+        htmlContent: '<h1>Ticket Created</h1><p>Your support ticket #{{ticketId}} has been created.</p>',
+      },
+      {
+        type: EmailTemplateType.TICKET_REPLY,
+        name: 'Ticket Reply',
+        subject: 'New Reply to Your Ticket',
+        htmlContent: '<h1>New Reply</h1><p>There is a new reply to your ticket #{{ticketId}}.</p>',
+      },
+    ];
+
+    for (const template of defaultTemplates) {
+      const exists = await this.templateRepository.findOne({
+        where: { type: template.type },
+      });
+      if (!exists) {
+        await this.templateRepository.save(template);
+      }
+    }
+  }
+}

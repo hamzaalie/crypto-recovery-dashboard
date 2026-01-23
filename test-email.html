@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email System Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input {
+            padding: 8px;
+            width: 300px;
+            margin: 10px 0;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff;
+            border-left: 4px solid #007bff;
+        }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Crypto Recovery - Email System Tester</h1>
+    
+    <div class="section">
+        <h2>1. Test SMTP Connection</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connectionResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Send Test Email</h2>
+        <input type="email" id="testEmail" placeholder="Enter email address" value="hamzaaliaps.55@gmail.com">
+        <button onclick="sendTestEmail()">Send Test Email</button>
+        <div id="emailResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Manually Verify User Email</h2>
+        <input type="email" id="verifyEmail" placeholder="Enter email to verify" value="hamzaaliaps.55@gmail.com">
+        <button onclick="verifyUser()">Verify Email</button>
+        <div id="verifyResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. Make User Admin (Optional)</h2>
+        <input type="email" id="adminEmail" placeholder="Enter email" value="hamzaaliaps.55@gmail.com">
+        <button onclick="makeAdmin()">Make Admin</button>
+        <div id="adminResult" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/v1';
+
+        async function testConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Testing connection...';
+            
+            try {
+                const response = await fetch(`${API_URL}/email/test-connection`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ ${data.message}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function sendTestEmail() {
+            const email = document.getElementById('testEmail').value;
+            const resultDiv = document.getElementById('emailResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Sending email...';
+            
+            try {
+                const response = await fetch(`${API_URL}/email/send-test`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Email sent successfully!<br>Message ID: ${data.messageId}<br>Check your inbox and spam folder.`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Failed: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function verifyUser() {
+            const email = document.getElementById('verifyEmail').value;
+            const resultDiv = document.getElementById('verifyResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Verifying user...';
+            
+            try {
+                const response = await fetch(`${API_URL}/email/verify-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ User verified successfully!<br>Email: ${data.email}<br>You can now login.`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Failed: ${data.message || 'User not found'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function makeAdmin() {
+            const email = document.getElementById('adminEmail').value;
+            const resultDiv = document.getElementById('adminResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Making user admin...';
+            
+            try {
+                const response = await fetch(`${API_URL}/email/make-admin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ User is now an admin!<br>Email: ${data.email}<br>Role: ${data.role}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Failed: ${data.message || 'User not found'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

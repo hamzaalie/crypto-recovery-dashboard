@@ -1,0 +1,9 @@
+export { default as DashboardPage } from './DashboardPage';
+export { default as UsersPage } from './UsersPage';
+export { default as CasesPage } from './CasesPage';
+export { default as TicketsPage } from './TicketsPage';
+export { default as WalletsPage } from './WalletsPage';
+export { default as AuditLogsPage } from './AuditLogsPage';
+export { default as EmailTemplatesPage } from './EmailTemplatesPage';
+export { default as ReportsPage } from './ReportsPage';
+export { default as SettingsPage } from './SettingsPage';
