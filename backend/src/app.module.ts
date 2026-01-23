@@ -13,6 +13,7 @@ import { AuditModule } from './modules/audit/audit.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AgentModule } from './modules/agent/agent.module';
 import { FilesModule } from './modules/files/files.module';
+import { HealthController, ApiHealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -80,5 +81,6 @@ import { FilesModule } from './modules/files/files.module';
     AgentModule,
     FilesModule,
   ],
+  controllers: [HealthController, ApiHealthController],
 })
 export class AppModule {}
