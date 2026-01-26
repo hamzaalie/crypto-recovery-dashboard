@@ -69,22 +69,8 @@ export class AdminController {
     return this.usersService.findAllAdmin(+page, +limit, { search, role, status });
   }
 
-  @Get('users/:id')
-  findOneUser(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
-
-  @Patch('users/:id')
-  updateUser(@Param('id') id: string, @Body() updateDto: any) {
-    return this.usersService.adminUpdate(id, updateDto);
-  }
-
-  @Delete('users/:id')
-  removeUser(@Param('id') id: string) {
-    return this.usersService.remove(id);
-  }
-
   // Invite a new user (admin creates user, sends invite email)
+  // NOTE: This must come BEFORE users/:id routes to avoid route conflict
   @Post('users/invite')
   async inviteUser(
     @Body() inviteDto: { email: string; firstName: string; lastName: string; role?: string }
@@ -112,6 +98,21 @@ export class AdminController {
         status: user.status,
       },
     };
+  }
+
+  @Get('users/:id')
+  findOneUser(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+
+  @Patch('users/:id')
+  updateUser(@Param('id') id: string, @Body() updateDto: any) {
+    return this.usersService.adminUpdate(id, updateDto);
+  }
+
+  @Delete('users/:id')
+  removeUser(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 
   // Resend invite email for pending user
