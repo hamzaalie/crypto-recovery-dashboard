@@ -17,8 +17,6 @@ import {
   CheckCircle,
   XCircle,
   TrendingUp,
-  Copy,
-  ExternalLink,
 } from 'lucide-react';
 
 interface WalletItem {
@@ -90,7 +88,6 @@ export default function WalletsPage() {
   });
 
   const requests: WalletRequest[] = requestsData?.data || [];
-  const pendingRequests = requests.filter(r => r.status === 'pending');
 
   // Calculate totals
   const totalUsdValue = wallets?.reduce((acc, w) => acc + Number(w.usdValue || 0), 0) || 0;

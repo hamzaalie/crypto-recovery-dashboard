@@ -193,11 +193,7 @@ export default function CasesPage() {
           <CardContent className="py-12 text-center">
             <FileText className="h-12 w-12 mx-auto text-gray-400" />
             <p className="mt-2 text-gray-500">No cases found</p>
-            <Link to="/cases/new">
-              <Button variant="outline" className="mt-4">
-                Create your first case
-              </Button>
-            </Link>
+            <p className="text-sm text-gray-400 mt-2">Cases will appear here once assigned to you.</p>
           </CardContent>
         </Card>
       ) : (
