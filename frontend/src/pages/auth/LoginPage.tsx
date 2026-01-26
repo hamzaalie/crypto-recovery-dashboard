@@ -153,13 +153,6 @@ export default function LoginPage() {
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign in
           </Button>
-
-          <p className="text-sm text-center text-gray-600 dark:text-gray-400">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-primary hover:underline font-medium">
-              Sign up
-            </Link>
-          </p>
         </CardFooter>
       </form>
     </Card>

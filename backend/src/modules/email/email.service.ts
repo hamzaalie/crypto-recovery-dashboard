@@ -199,6 +199,56 @@ export class EmailService implements OnModuleInit {
     return this.sendRawEmail(to, 'Reset Your Password - Crypto Recovery Platform', htmlContent);
   }
 
+  async sendInviteEmail(to: string, firstName: string, inviteLink: string) {
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #007ac2 0%, #005a8f 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
+          .button { display: inline-block; background: #007ac2; color: white; padding: 14px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+          .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+          .highlight { background: #e0f2fe; border: 1px solid #007ac2; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎉 You've Been Invited!</h1>
+          </div>
+          <div class="content">
+            <h2>Hello ${firstName}!</h2>
+            <p>You have been invited to join the Crypto Recovery Platform. To get started, please complete your account setup by clicking the button below.</p>
+            <p style="text-align: center;">
+              <a href="${inviteLink}" class="button">Complete Your Signup</a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; background: #e5e7eb; padding: 10px; border-radius: 5px; font-size: 14px;">${inviteLink}</p>
+            <div class="highlight">
+              <strong>📋 What you'll need to do:</strong>
+              <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                <li>Set your password</li>
+                <li>Review your account details</li>
+                <li>Start using the platform</li>
+              </ul>
+            </div>
+            <p><strong>This link will expire in 7 days.</strong></p>
+            <p>If you didn't expect this invitation or have any questions, please contact our support team.</p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} Crypto Recovery Platform. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    return this.sendRawEmail(to, 'You\'ve Been Invited - Complete Your Signup', htmlContent);
+  }
+
   async findAllTemplates() {
     return this.templateRepository.find({ order: { type: 'ASC' } });
   }

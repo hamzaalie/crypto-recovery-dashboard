@@ -290,4 +290,90 @@ export class UsersService {
       passwordResetExpires: null,
     });
   }
+
+  // Admin creates user and sends invite email
+  async createInvitedUser(data: { email: string; firstName: string; lastName: string; role?: string }): Promise<User> {
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Email already exists');
+    }
+
+    // Generate a random temporary password (user will set their own via invite link)
+    const tempPassword = crypto.randomBytes(16).toString('hex');
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    
+    // Generate invite token (same as email verification token)
+    const inviteToken = crypto.randomBytes(32).toString('hex');
+    const inviteExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    const user = this.usersRepository.create({
+      email: data.email,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      password: hashedPassword,
+      role: (data.role as UserRole) || UserRole.USER,
+      status: UserStatus.PENDING,
+      isEmailVerified: false,
+      emailVerificationToken: inviteToken,
+      emailVerificationExpires: inviteExpires,
+    });
+
+    return this.usersRepository.save(user);
+  }
+
+  // User completes signup (sets password after clicking invite link)
+  async completeSignup(token: string, password: string): Promise<User> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        emailVerificationToken: token,
+        emailVerificationExpires: MoreThan(new Date()),
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Invalid or expired invitation token');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    user.password = hashedPassword;
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    user.status = UserStatus.ACTIVE;
+
+    return this.usersRepository.save(user);
+  }
+
+  // Resend invite for pending users
+  async regenerateInviteToken(userId: string): Promise<string> {
+    const user = await this.findOne(userId);
+    
+    if (user.status !== UserStatus.PENDING) {
+      throw new BadRequestException('User has already completed signup');
+    }
+
+    const inviteToken = crypto.randomBytes(32).toString('hex');
+    const inviteExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    user.emailVerificationToken = inviteToken;
+    user.emailVerificationExpires = inviteExpires;
+    
+    await this.usersRepository.save(user);
+    
+    return inviteToken;
+  }
+
+  // Find user by invite token
+  async findByInviteToken(token: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: {
+        emailVerificationToken: token,
+        emailVerificationExpires: MoreThan(new Date()),
+      },
+    });
+  }
 }

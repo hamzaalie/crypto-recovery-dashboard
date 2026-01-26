@@ -8,6 +8,7 @@ import { CasesModule } from '../cases/cases.module';
 import { TicketsModule } from '../tickets/tickets.module';
 import { WalletsModule } from '../wallets/wallets.module';
 import { AuditModule } from '../audit/audit.module';
+import { EmailModule } from '../email/email.module';
 import { Case } from '../cases/entities/case.entity';
 import { Ticket } from '../tickets/entities/ticket.entity';
 import { User } from '../users/entities/user.entity';
@@ -20,6 +21,7 @@ import { User } from '../users/entities/user.entity';
     TicketsModule,
     WalletsModule,
     AuditModule,
+    EmailModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

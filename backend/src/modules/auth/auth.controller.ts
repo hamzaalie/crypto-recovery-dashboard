@@ -23,6 +23,8 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // Keep register endpoint but make it admin-only or remove it
+  // For now, we'll keep it but users should use invite flow
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 3600000 } }) // 5 registrations per hour
   register(@Body() registerDto: RegisterDto) {
@@ -43,6 +45,18 @@ export class AuthController {
   @Post('resend-verification')
   resendVerification(@Body('email') email: string) {
     return this.authService.resendVerificationEmail(email);
+  }
+
+  // Validate invite token (for complete-signup page)
+  @Post('validate-invite-token')
+  validateInviteToken(@Body('token') token: string) {
+    return this.authService.validateInviteToken(token);
+  }
+
+  // Complete signup (user sets password after invite)
+  @Post('complete-signup')
+  completeSignup(@Body() body: { token: string; password: string }) {
+    return this.authService.completeSignup(body.token, body.password);
   }
 
   @Post('refresh')

@@ -9,8 +9,10 @@ import { CasesService } from '../cases/cases.service';
 import { TicketsService } from '../tickets/tickets.service';
 import { WalletsService } from '../wallets/wallets.service';
 import { AuditService } from '../audit/audit.service';
+import { EmailService } from '../email/email.service';
 import { CaseStatus } from '../cases/entities/case.entity';
 import { TicketStatus } from '../tickets/entities/ticket.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -23,6 +25,8 @@ export class AdminController {
     private readonly ticketsService: TicketsService,
     private readonly walletsService: WalletsService,
     private readonly auditService: AuditService,
+    private readonly emailService: EmailService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Get('stats')
@@ -78,6 +82,54 @@ export class AdminController {
   @Delete('users/:id')
   removeUser(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  // Invite a new user (admin creates user, sends invite email)
+  @Post('users/invite')
+  async inviteUser(
+    @Body() inviteDto: { email: string; firstName: string; lastName: string; role?: string }
+  ) {
+    const user = await this.usersService.createInvitedUser(inviteDto);
+    
+    // Send invite email
+    const frontendUrl = this.configService.get('FRONTEND_URL') || 'http://localhost:5173';
+    const inviteLink = `${frontendUrl}/complete-signup?token=${user.emailVerificationToken}`;
+    
+    await this.emailService.sendInviteEmail(
+      user.email,
+      user.firstName,
+      inviteLink,
+    );
+
+    return {
+      message: 'User created and invite email sent',
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        status: user.status,
+      },
+    };
+  }
+
+  // Resend invite email for pending user
+  @Post('users/:id/resend-invite')
+  async resendInvite(@Param('id') id: string) {
+    const token = await this.usersService.regenerateInviteToken(id);
+    const user = await this.usersService.findOne(id);
+    
+    const frontendUrl = this.configService.get('FRONTEND_URL') || 'http://localhost:5173';
+    const inviteLink = `${frontendUrl}/complete-signup?token=${token}`;
+    
+    await this.emailService.sendInviteEmail(
+      user.email,
+      user.firstName,
+      inviteLink,
+    );
+
+    return { message: 'Invite email resent successfully' };
   }
 
   // Cases Management

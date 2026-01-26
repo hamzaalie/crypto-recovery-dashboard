@@ -337,4 +337,37 @@ export class AuthService {
     const { password, twoFactorSecret, ...sanitized } = user;
     return sanitized;
   }
+
+  // Validate invite token for complete-signup page
+  async validateInviteToken(token: string) {
+    const user = await this.usersService.findByInviteToken(token);
+    
+    if (!user) {
+      throw new BadRequestException('Invalid or expired invitation token');
+    }
+
+    return {
+      valid: true,
+      email: user.email,
+      firstName: user.firstName,
+    };
+  }
+
+  // Complete signup (user sets password after admin invite)
+  async completeSignup(token: string, password: string) {
+    const user = await this.usersService.completeSignup(token, password);
+
+    // Log account activation
+    await this.auditService.log({
+      userId: user.id,
+      action: AuditAction.USER_REGISTER,
+      entityType: 'user',
+      entityId: user.id,
+      details: { email: user.email, method: 'invite' },
+    });
+
+    return {
+      message: 'Account activated successfully. You can now log in.',
+    };
+  }
 }

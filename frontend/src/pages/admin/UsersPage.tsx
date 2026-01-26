@@ -18,6 +18,8 @@ import {
   ShieldOff,
   X,
   Loader2,
+  Mail,
+  Send,
 } from 'lucide-react';
 
 interface User {
@@ -54,6 +56,14 @@ export default function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  
+  // Create user form state
+  const [newUserData, setNewUserData] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    role: 'user',
+  });
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -101,6 +111,49 @@ export default function UsersPage() {
       toast({
         title: 'Error',
         description: err.response?.data?.message || 'Failed to delete user',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const createUserMutation = useMutation({
+    mutationFn: async (data: typeof newUserData) => {
+      const response = await api.post('/admin/users/invite', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast({
+        title: 'Invite sent',
+        description: 'User has been created and an invite email has been sent.',
+      });
+      setIsModalOpen(false);
+      setNewUserData({ email: '', firstName: '', lastName: '', role: 'user' });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Error',
+        description: err.response?.data?.message || 'Failed to create user',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const resendInviteMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await api.post(`/admin/users/${userId}/resend-invite`);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Invite resent',
+        description: 'A new invite email has been sent to the user.',
+      });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Error',
+        description: err.response?.data?.message || 'Failed to resend invite',
         variant: 'destructive',
       });
     },
@@ -313,6 +366,17 @@ export default function UsersPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end space-x-2">
+                          {user.status === 'pending' && !user.isEmailVerified && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => resendInviteMutation.mutate(user.id)}
+                              disabled={resendInviteMutation.isPending}
+                              title="Resend invite"
+                            >
+                              <Send className="h-4 w-4 text-primary" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
@@ -343,26 +407,115 @@ export default function UsersPage() {
         </CardContent>
       </Card>
 
-      {/* Edit Modal */}
+      {/* Create/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setIsModalOpen(false)} />
-          <Card className="relative z-10 w-full max-w-md mx-4">
+          <Card className="relative z-10 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>{modalMode === 'create' ? 'Create User' : 'Edit User'}</CardTitle>
+                <CardTitle>{modalMode === 'create' ? 'Invite New User' : 'Edit User'}</CardTitle>
                 <Button variant="ghost" size="sm" onClick={() => setIsModalOpen(false)}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {selectedUser && (
+              {modalMode === 'create' ? (
                 <>
-                  <div>
-                    <p className="font-medium">{selectedUser.firstName} {selectedUser.lastName}</p>
-                    <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Create a new user account. An invite email will be sent for them to complete their signup and set a password.
+                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="user@example.com"
+                      value={newUserData.email}
+                      onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                    />
                   </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name *</Label>
+                      <Input
+                        id="firstName"
+                        placeholder="John"
+                        value={newUserData.firstName}
+                        onChange={(e) => setNewUserData({ ...newUserData, firstName: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name *</Label>
+                      <Input
+                        id="lastName"
+                        placeholder="Doe"
+                        value={newUserData.lastName}
+                        onChange={(e) => setNewUserData({ ...newUserData, lastName: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Role</Label>
+                    <select
+                      id="role"
+                      className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
+                      value={newUserData.role}
+                      onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value })}
+                    >
+                      <option value="user">User</option>
+                      <option value="support_agent">Support Agent</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <Button
+                    className="w-full"
+                    onClick={() => createUserMutation.mutate(newUserData)}
+                    disabled={createUserMutation.isPending || !newUserData.email || !newUserData.firstName || !newUserData.lastName}
+                  >
+                    {createUserMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Mail className="mr-2 h-4 w-4" />
+                    )}
+                    Send Invite
+                  </Button>
+                </>
+              ) : selectedUser && (
+                <>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-lg font-semibold">
+                      {selectedUser.firstName?.[0]}{selectedUser.lastName?.[0]}
+                    </div>
+                    <div>
+                      <p className="font-medium">{selectedUser.firstName} {selectedUser.lastName}</p>
+                      <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                    </div>
+                  </div>
+                  
+                  {selectedUser.status === 'pending' && !selectedUser.isEmailVerified && (
+                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        This user has not completed their signup yet.
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => resendInviteMutation.mutate(selectedUser.id)}
+                        disabled={resendInviteMutation.isPending}
+                      >
+                        {resendInviteMutation.isPending ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Send className="mr-2 h-4 w-4" />
+                        )}
+                        Resend Invite
+                      </Button>
+                    </div>
+                  )}
+                  
                   <div className="space-y-2">
                     <Label>Role</Label>
                     <select
@@ -385,6 +538,7 @@ export default function UsersPage() {
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                       <option value="suspended">Suspended</option>
+                      <option value="pending">Pending</option>
                     </select>
                   </div>
                 </>

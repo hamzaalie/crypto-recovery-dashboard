@@ -4,12 +4,12 @@ import { useAuthStore } from '@/stores/auth.store';
 
 // Auth pages
 import LoginPage from '@/pages/auth/LoginPage';
-import RegisterPage from '@/pages/auth/RegisterPage';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import TwoFactorPage from '@/pages/auth/TwoFactorPage';
 import VerifyEmailPage from '@/pages/auth/VerifyEmailPage';
 import VerifyEmailPendingPage from '@/pages/auth/VerifyEmailPendingPage';
+import CompleteSignupPage from '@/pages/auth/CompleteSignupPage';
 
 // User Dashboard
 import UserDashboard from '@/pages/user/DashboardPage';
@@ -64,10 +64,10 @@ function App() {
         {/* Public routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/2fa" element={<TwoFactorPage />} />
+          <Route path="/complete-signup" element={<CompleteSignupPage />} />
         </Route>
 
         {/* Email verification routes */}
