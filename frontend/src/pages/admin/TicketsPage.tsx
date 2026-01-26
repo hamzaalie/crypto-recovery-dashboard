@@ -127,7 +127,7 @@ export default function AdminTicketsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tickets Management</h1>
           <p className="text-gray-500 dark:text-gray-400">Manage all support tickets</p>

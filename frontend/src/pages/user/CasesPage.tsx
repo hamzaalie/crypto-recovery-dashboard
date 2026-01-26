@@ -86,7 +86,7 @@ export default function CasesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Recovery Cases</h1>
           <p className="text-gray-500 dark:text-gray-400">
@@ -94,7 +94,7 @@ export default function CasesPage() {
           </p>
         </div>
         <Link to="/cases/new">
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             New Case
           </Button>

@@ -146,7 +146,7 @@ export default function AgentDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Welcome back, {user?.firstName}!
@@ -155,12 +155,12 @@ export default function AgentDashboardPage() {
             Here's your workload overview for today
           </p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <Link to="/agent/cases">
-            <Button variant="outline">View All Cases</Button>
+            <Button variant="outline" className="w-full sm:w-auto">View All Cases</Button>
           </Link>
           <Link to="/agent/tickets">
-            <Button>View All Tickets</Button>
+            <Button className="w-full sm:w-auto">View All Tickets</Button>
           </Link>
         </div>
       </div>

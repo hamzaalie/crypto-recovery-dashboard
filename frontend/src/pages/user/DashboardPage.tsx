@@ -108,7 +108,7 @@ export default function UserDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Welcome back, {user?.firstName}!
@@ -118,7 +118,7 @@ export default function UserDashboard() {
           </p>
         </div>
         <Link to="/cases/new">
-          <Button>
+          <Button className="w-full sm:w-auto">
             <FileText className="mr-2 h-4 w-4" />
             New Recovery Case
           </Button>
