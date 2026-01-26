@@ -9,10 +9,9 @@ import {
   Query,
   UseGuards,
   Request,
-  ForbiddenException,
 } from '@nestjs/common';
 import { WalletsService } from './wallets.service';
-import { CreateWalletDto, UpdateWalletDto, AdminUpdateWalletDto } from './dto/wallet.dto';
+import { CreateWalletDto, UpdateWalletDto, CreateWalletRequestDto, UpdateWalletRequestDto } from './dto/wallet.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -23,16 +22,21 @@ import { UserRole } from '../users/entities/user.entity';
 export class WalletsController {
   constructor(private readonly walletsService: WalletsService) {}
 
+  // Admin creates wallet for user
   @Post()
-  create(@Request() req, @Body() createWalletDto: CreateWalletDto) {
-    return this.walletsService.create(req.user.id, createWalletDto);
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  create(@Body() createWalletDto: CreateWalletDto) {
+    return this.walletsService.create(createWalletDto);
   }
 
+  // User gets their wallets
   @Get()
-  findMyWallets(@Request() req, @Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.walletsService.findByUser(req.user.id, +page, +limit);
+  findMyWallets(@Request() req) {
+    return this.walletsService.findByUser(req.user.id);
   }
 
+  // Admin gets all wallets
   @Get('all')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPPORT_AGENT)
@@ -40,6 +44,7 @@ export class WalletsController {
     return this.walletsService.findAll(+page, +limit);
   }
 
+  // Get wallet stats
   @Get('stats')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -47,44 +52,68 @@ export class WalletsController {
     return this.walletsService.getStats();
   }
 
+  // ============ Wallet Requests ============
+
+  // User creates a deposit/withdrawal request
+  @Post('requests')
+  createRequest(@Request() req, @Body() createDto: CreateWalletRequestDto) {
+    return this.walletsService.createRequest(req.user.id, createDto);
+  }
+
+  // User gets their requests
+  @Get('requests')
+  findMyRequests(@Request() req, @Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.walletsService.findUserRequests(req.user.id, +page, +limit);
+  }
+
+  // Admin gets all requests
+  @Get('requests/all')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  findAllRequests(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+  ) {
+    return this.walletsService.findAllRequests(+page, +limit, { status, type });
+  }
+
+  // Get pending requests count
+  @Get('requests/pending-count')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  getPendingCount() {
+    return this.walletsService.getPendingRequestsCount();
+  }
+
+  // Admin updates request status
+  @Patch('requests/:id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  updateRequest(@Request() req, @Param('id') id: string, @Body() updateDto: UpdateWalletRequestDto) {
+    return this.walletsService.updateRequest(id, req.user.id, updateDto);
+  }
+
+  // Get single wallet
   @Get(':id')
-  async findOne(@Request() req, @Param('id') id: string) {
-    const wallet = await this.walletsService.findOne(id);
-    
-    // Authorization check: Allow access if user owns the wallet, is admin, or is assigned agent viewing user's wallet
-    const hasAccess = 
-      wallet.userId === req.user.id ||
-      req.user.role === UserRole.ADMIN ||
-      req.user.role === UserRole.SUPPORT_AGENT;
-    
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this wallet');
-    }
-    
-    return wallet;
+  findOne(@Param('id') id: string) {
+    return this.walletsService.findOne(id);
   }
 
+  // Admin updates wallet
   @Patch(':id')
-  update(@Request() req, @Param('id') id: string, @Body() updateWalletDto: UpdateWalletDto) {
-    return this.walletsService.update(id, req.user.id, updateWalletDto);
-  }
-
-  @Patch(':id/admin')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
-  adminUpdate(@Param('id') id: string, @Body() updateDto: AdminUpdateWalletDto) {
-    return this.walletsService.adminUpdate(id, updateDto);
+  update(@Param('id') id: string, @Body() updateWalletDto: UpdateWalletDto) {
+    return this.walletsService.update(id, updateWalletDto);
   }
 
+  // Admin deletes wallet
   @Delete(':id')
-  remove(@Request() req, @Param('id') id: string) {
-    return this.walletsService.remove(id, req.user.id);
-  }
-
-  @Delete(':id/admin')
   @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
-  adminRemove(@Param('id') id: string) {
-    return this.walletsService.adminRemove(id);
+  remove(@Param('id') id: string) {
+    return this.walletsService.remove(id);
   }
 }

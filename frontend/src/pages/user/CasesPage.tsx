@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatDate, getStatusColor, cn } from '@/lib/utils';
 import {
   FileText,
-  Plus,
   Search,
   Filter,
   Clock,
@@ -88,17 +86,11 @@ export default function CasesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Recovery Cases</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Cases</h1>
           <p className="text-gray-500 dark:text-gray-400">
-            Track and manage your crypto recovery cases
+            Track your assigned recovery cases
           </p>
         </div>
-        <Link to="/cases/new">
-          <Button className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            New Case
-          </Button>
-        </Link>
       </div>
 
       {/* Stats */}

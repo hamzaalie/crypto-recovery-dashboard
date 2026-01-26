@@ -74,8 +74,7 @@ export default function DashboardLayout() {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
           <div className="flex items-center gap-3">
-            <img src={logoSmall} alt="Logo" className="w-8 h-8 object-contain" />
-            <span className="text-lg font-bold">Crypto Recovery</span>
+            <img src={logoSmall} alt="Logo" className="h-10 w-auto object-contain" />
           </div>
           <button 
             onClick={() => setSidebarOpen(false)}
@@ -134,18 +133,11 @@ export default function DashboardLayout() {
             <Menu size={24} />
           </button>
           
-          <div className="flex items-center gap-3 lg:hidden">
-            <img src={logoSmall} alt="Logo" className="w-6 h-6 object-contain" />
-            <span className="font-semibold text-gray-900">Crypto Recovery</span>
+          <div className="flex items-center lg:hidden">
+            <img src={logoSmall} alt="Logo" className="h-8 w-auto object-contain" />
           </div>
           
-          <div className="hidden lg:block" />
-          
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              Role: <strong className="text-gray-900 capitalize">{user?.role?.replace('_', ' ')}</strong>
-            </span>
-          </div>
+          <div className="flex-1" />
         </header>
 
         {/* Page Content */}

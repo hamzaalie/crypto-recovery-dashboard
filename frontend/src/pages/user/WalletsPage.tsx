@@ -1,418 +1,410 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { formatCurrency, formatDate } from '@/lib/utils';
 import {
   Wallet,
-  Plus,
-  RefreshCw,
-  Trash2,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Loader2,
+  X,
+  Clock,
+  CheckCircle,
+  XCircle,
+  TrendingUp,
+  Copy,
   ExternalLink,
-  Search,
-  Filter,
-  Bitcoin,
-  CircleDollarSign,
 } from 'lucide-react';
 
-interface Wallet {
+interface WalletItem {
   id: string;
-  address: string;
-  blockchain: string;
-  walletType: string;
-  label: string;
-  currentBalance: number;
-  lastSyncedAt: string;
-  isActive: boolean;
+  type: string;
+  tokenBalance: number;
+  usdValue: number;
+  status: string;
   createdAt: string;
 }
 
-const blockchainIcons: Record<string, React.ElementType> = {
-  BITCOIN: Bitcoin,
-  ETHEREUM: CircleDollarSign,
-  DEFAULT: Wallet,
+interface WalletRequest {
+  id: string;
+  type: 'deposit' | 'withdrawal';
+  amount: number;
+  status: string;
+  walletAddress?: string;
+  notes?: string;
+  adminNotes?: string;
+  wallet: WalletItem;
+  createdAt: string;
+}
+
+const CRYPTO_INFO: Record<string, { symbol: string; name: string; color: string; icon: string }> = {
+  bitcoin: { symbol: 'BTC', name: 'Bitcoin', color: 'bg-orange-500', icon: '₿' },
+  ethereum: { symbol: 'ETH', name: 'Ethereum', color: 'bg-blue-500', icon: 'Ξ' },
+  usdt: { symbol: 'USDT', name: 'Tether', color: 'bg-green-500', icon: '₮' },
+  usdc: { symbol: 'USDC', name: 'USD Coin', color: 'bg-blue-400', icon: '$' },
+  bnb: { symbol: 'BNB', name: 'BNB', color: 'bg-yellow-500', icon: 'B' },
+  solana: { symbol: 'SOL', name: 'Solana', color: 'bg-purple-500', icon: '◎' },
+  xrp: { symbol: 'XRP', name: 'Ripple', color: 'bg-gray-600', icon: 'X' },
+  cardano: { symbol: 'ADA', name: 'Cardano', color: 'bg-blue-600', icon: '₳' },
+  dogecoin: { symbol: 'DOGE', name: 'Dogecoin', color: 'bg-yellow-400', icon: 'Ð' },
+};
+
+const getCryptoInfo = (type: string) => {
+  return CRYPTO_INFO[type] || { symbol: type.toUpperCase(), name: type, color: 'bg-gray-500', icon: '¤' };
 };
 
 export default function WalletsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBlockchain, setSelectedBlockchain] = useState<string>('');
-  const [isAddingWallet, setIsAddingWallet] = useState(false);
-  const [newWallet, setNewWallet] = useState({
-    address: '',
-    blockchain: 'ETHEREUM',
-    walletType: 'HOT_WALLET',
-    label: '',
+  const [selectedWallet, setSelectedWallet] = useState<WalletItem | null>(null);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [requestType, setRequestType] = useState<'deposit' | 'withdrawal'>('deposit');
+  const [requestForm, setRequestForm] = useState({
+    amount: '',
+    walletAddress: '',
+    notes: '',
   });
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data: wallets, isLoading } = useQuery<Wallet[]>({
-    queryKey: ['wallets'],
+  // Fetch wallets
+  const { data: wallets, isLoading: walletsLoading } = useQuery<WalletItem[]>({
+    queryKey: ['my-wallets'],
     queryFn: async () => {
       const response = await api.get('/wallets');
       return Array.isArray(response.data) ? response.data : response.data?.data || [];
     },
   });
 
-  const addWalletMutation = useMutation({
-    mutationFn: async (wallet: typeof newWallet) => {
-      const response = await api.post('/wallets', wallet);
+  // Fetch requests
+  const { data: requestsData } = useQuery({
+    queryKey: ['my-wallet-requests'],
+    queryFn: async () => {
+      const response = await api.get('/wallets/requests');
+      return response.data;
+    },
+  });
+
+  const requests: WalletRequest[] = requestsData?.data || [];
+  const pendingRequests = requests.filter(r => r.status === 'pending');
+
+  // Calculate totals
+  const totalUsdValue = wallets?.reduce((acc, w) => acc + Number(w.usdValue || 0), 0) || 0;
+
+  // Create request mutation
+  const createRequestMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.post('/wallets/requests', data);
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallets'] });
+      queryClient.invalidateQueries({ queryKey: ['my-wallet-requests'] });
       toast({
-        title: 'Wallet added',
-        description: 'Your wallet has been successfully added.',
+        title: 'Request submitted',
+        description: 'Your request has been sent to the admin for review.',
       });
-      setIsAddingWallet(false);
-      setNewWallet({
-        address: '',
-        blockchain: 'ETHEREUM',
-        walletType: 'HOT_WALLET',
-        label: '',
-      });
+      setIsRequestModalOpen(false);
+      setRequestForm({ amount: '', walletAddress: '', notes: '' });
+      setSelectedWallet(null);
     },
     onError: (err: any) => {
       toast({
         title: 'Error',
-        description: err.response?.data?.message || 'Failed to add wallet',
+        description: err.response?.data?.message || 'Failed to submit request',
         variant: 'destructive',
       });
     },
   });
 
-  const syncWalletMutation = useMutation({
-    mutationFn: async (walletId: string) => {
-      const response = await api.post(`/wallets/${walletId}/sync`);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallets'] });
-      toast({
-        title: 'Wallet synced',
-        description: 'Wallet balance has been updated.',
-      });
-    },
-    onError: (err: any) => {
-      toast({
-        title: 'Sync failed',
-        description: err.response?.data?.message || 'Failed to sync wallet',
-        variant: 'destructive',
-      });
-    },
-  });
+  const handleOpenRequest = (wallet: WalletItem, type: 'deposit' | 'withdrawal') => {
+    setSelectedWallet(wallet);
+    setRequestType(type);
+    setRequestForm({ amount: '', walletAddress: '', notes: '' });
+    setIsRequestModalOpen(true);
+  };
 
-  const deleteWalletMutation = useMutation({
-    mutationFn: async (walletId: string) => {
-      await api.delete(`/wallets/${walletId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallets'] });
-      toast({
-        title: 'Wallet removed',
-        description: 'The wallet has been removed from your account.',
-      });
-    },
-    onError: (err: any) => {
-      toast({
-        title: 'Error',
-        description: err.response?.data?.message || 'Failed to remove wallet',
-        variant: 'destructive',
-      });
-    },
-  });
+  const handleSubmitRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedWallet) return;
 
-  const filteredWallets = wallets?.filter((wallet) => {
-    const matchesSearch =
-      wallet.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      wallet.label?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesBlockchain = !selectedBlockchain || wallet.blockchain === selectedBlockchain;
-    return matchesSearch && matchesBlockchain;
-  });
+    createRequestMutation.mutate({
+      walletId: selectedWallet.id,
+      type: requestType,
+      amount: parseFloat(requestForm.amount),
+      walletAddress: requestType === 'withdrawal' ? requestForm.walletAddress : undefined,
+      notes: requestForm.notes || undefined,
+    });
+  };
 
-  const blockchains = [...new Set(wallets?.map((w) => w.blockchain).filter(Boolean) || [])];
-
-  const totalBalance = wallets?.reduce((acc, w) => acc + (w.currentBalance || 0), 0) || 0;
-
-  const getBlockchainExplorer = (blockchain: string, address: string) => {
-    const explorers: Record<string, string> = {
-      BITCOIN: `https://blockchain.com/btc/address/${address}`,
-      ETHEREUM: `https://etherscan.io/address/${address}`,
-      SOLANA: `https://explorer.solana.com/address/${address}`,
-      POLYGON: `https://polygonscan.com/address/${address}`,
-      BINANCE_SMART_CHAIN: `https://bscscan.com/address/${address}`,
-    };
-    return explorers[blockchain] || '#';
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'rejected':
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />;
+    }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Wallets</h1>
-          <p className="text-gray-500 dark:text-gray-400">
-            Manage and monitor your cryptocurrency wallets
-          </p>
-        </div>
-        <Button onClick={() => setIsAddingWallet(true)} className="w-full sm:w-auto">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Wallet
-        </Button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Wallets</p>
-                <p className="text-2xl font-bold">{wallets?.length || 0}</p>
-              </div>
-              <Wallet className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Balance</p>
-                <p className="text-xl sm:text-2xl font-bold truncate">{formatCurrency(totalBalance)}</p>
-              </div>
-              <CircleDollarSign className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Blockchains</p>
-                <p className="text-2xl font-bold">{blockchains.length}</p>
-              </div>
-              <Bitcoin className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Add Wallet Modal */}
-      {isAddingWallet && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Add New Wallet</CardTitle>
-            <CardDescription>Enter your wallet details to track its balance</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                addWalletMutation.mutate(newWallet);
-              }}
-              className="space-y-4"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="address">Wallet Address</Label>
-                  <Input
-                    id="address"
-                    placeholder="0x..."
-                    value={newWallet.address}
-                    onChange={(e) => setNewWallet({ ...newWallet, address: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="label">Label (Optional)</Label>
-                  <Input
-                    id="label"
-                    placeholder="My Main Wallet"
-                    value={newWallet.label}
-                    onChange={(e) => setNewWallet({ ...newWallet, label: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="blockchain">Blockchain</Label>
-                  <select
-                    id="blockchain"
-                    className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
-                    value={newWallet.blockchain}
-                    onChange={(e) => setNewWallet({ ...newWallet, blockchain: e.target.value })}
-                  >
-                    <option value="BITCOIN">Bitcoin</option>
-                    <option value="ETHEREUM">Ethereum</option>
-                    <option value="SOLANA">Solana</option>
-                    <option value="POLYGON">Polygon</option>
-                    <option value="BINANCE_SMART_CHAIN">Binance Smart Chain</option>
-                    <option value="OTHER">Other</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="walletType">Wallet Type</Label>
-                  <select
-                    id="walletType"
-                    className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
-                    value={newWallet.walletType}
-                    onChange={(e) => setNewWallet({ ...newWallet, walletType: e.target.value })}
-                  >
-                    <option value="HOT_WALLET">Hot Wallet</option>
-                    <option value="COLD_WALLET">Cold Wallet</option>
-                    <option value="EXCHANGE">Exchange</option>
-                    <option value="HARDWARE">Hardware</option>
-                    <option value="PAPER">Paper</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsAddingWallet(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={addWalletMutation.isPending}>
-                  {addWalletMutation.isPending ? 'Adding...' : 'Add Wallet'}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search by address or label..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-400" />
-          <select
-            className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
-            value={selectedBlockchain}
-            onChange={(e) => setSelectedBlockchain(e.target.value)}
-          >
-            <option value="">All Blockchains</option>
-            {blockchains.map((blockchain) => (
-              <option key={blockchain} value={blockchain}>
-                {blockchain.replace(/_/g, ' ')}
-              </option>
-            ))}
-          </select>
+      {/* Portfolio Header */}
+      <div className="bg-gradient-to-r from-brand to-blue-600 rounded-2xl p-6 text-white">
+        <p className="text-sm opacity-80">Total Portfolio Value</p>
+        <h1 className="text-3xl sm:text-4xl font-bold mt-1">{formatCurrency(totalUsdValue)}</h1>
+        <div className="flex items-center gap-2 mt-2 text-sm opacity-80">
+          <TrendingUp className="h-4 w-4" />
+          <span>{wallets?.length || 0} Assets</span>
         </div>
       </div>
 
-      {/* Wallets List */}
-      {isLoading ? (
-        <div className="text-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-gray-400" />
-          <p className="mt-2 text-gray-500">Loading wallets...</p>
-        </div>
-      ) : filteredWallets?.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Wallet className="h-12 w-12 mx-auto text-gray-400" />
-            <p className="mt-2 text-gray-500">No wallets found</p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => setIsAddingWallet(true)}
-            >
-              Add your first wallet
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredWallets?.map((wallet) => {
-            const Icon = blockchainIcons[wallet.blockchain] || blockchainIcons.DEFAULT;
-            return (
-              <Card key={wallet.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                        <Icon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+      {/* Wallets Grid */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">My Assets</h2>
+        {walletsLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        ) : !wallets || wallets.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Wallet className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500">No assets in your wallet yet.</p>
+              <p className="text-sm text-gray-400 mt-1">Contact support to get started.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            {wallets.map((wallet) => {
+              const crypto = getCryptoInfo(wallet.type);
+              return (
+                <Card key={wallet.id} className="overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="flex items-center justify-between p-4">
+                      <div className="flex items-center gap-4">
+                        <div className={cn('w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold', crypto.color)}>
+                          {crypto.icon}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">{crypto.name}</h3>
+                          <p className="text-sm text-gray-500">{crypto.symbol}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          {wallet.label || wallet.blockchain || 'Unknown'}
+                      <div className="text-right">
+                        <p className="font-bold text-lg">{formatCurrency(wallet.usdValue)}</p>
+                        <p className="text-sm text-gray-500 font-mono">
+                          {Number(wallet.tokenBalance).toFixed(6)} {crypto.symbol}
                         </p>
-                        <p className="text-xs text-gray-500">{wallet.walletType?.replace(/_/g, ' ') || 'Unknown'}</p>
                       </div>
                     </div>
-                    <a
-                      href={getBlockchainExplorer(wallet.blockchain, wallet.address)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs text-gray-500 mb-1">Address</p>
-                      <p className="font-mono text-sm truncate">{wallet.address}</p>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex border-t">
+                      <button
+                        onClick={() => handleOpenRequest(wallet, 'deposit')}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-green-600 hover:bg-green-50 transition-colors border-r"
+                        disabled={wallet.status === 'frozen'}
+                      >
+                        <ArrowDownLeft className="h-4 w-4" />
+                        Deposit
+                      </button>
+                      <button
+                        onClick={() => handleOpenRequest(wallet, 'withdrawal')}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                        disabled={wallet.status === 'frozen' || wallet.tokenBalance <= 0}
+                      >
+                        <ArrowUpRight className="h-4 w-4" />
+                        Withdraw
+                      </button>
                     </div>
 
+                    {wallet.status === 'frozen' && (
+                      <div className="px-4 py-2 bg-red-50 text-red-600 text-sm text-center">
+                        This wallet is currently frozen. Contact support for assistance.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Recent Requests */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4">Recent Requests</h2>
+        {requests.length === 0 ? (
+          <Card>
+            <CardContent className="py-8 text-center text-gray-500">
+              No transaction requests yet.
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {requests.slice(0, 10).map((request) => {
+              const crypto = getCryptoInfo(request.wallet?.type);
+              return (
+                <Card key={request.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          'p-2 rounded-lg',
+                          request.type === 'deposit' ? 'bg-green-100' : 'bg-red-100'
+                        )}>
+                          {request.type === 'deposit' ? (
+                            <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <ArrowUpRight className="h-4 w-4 text-red-600" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium capitalize">{request.type}</p>
+                          <p className="text-sm text-gray-500">{formatDate(request.createdAt)}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">
+                          {request.type === 'deposit' ? '+' : '-'}{Number(request.amount).toFixed(6)} {crypto.symbol}
+                        </p>
+                        <div className="flex items-center gap-1 justify-end">
+                          {getStatusIcon(request.status)}
+                          <span className={cn(
+                            'text-sm capitalize',
+                            request.status === 'pending' ? 'text-yellow-600' :
+                            request.status === 'completed' ? 'text-green-600' :
+                            request.status === 'rejected' ? 'text-red-600' :
+                            'text-gray-600'
+                          )}>
+                            {request.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {request.adminNotes && request.status === 'rejected' && (
+                      <p className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded">
+                        Reason: {request.adminNotes}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Request Modal */}
+      {isRequestModalOpen && selectedWallet && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                {requestType === 'deposit' ? (
+                  <>
+                    <ArrowDownLeft className="h-5 w-5 text-green-600" />
+                    Request Deposit
+                  </>
+                ) : (
+                  <>
+                    <ArrowUpRight className="h-5 w-5 text-red-600" />
+                    Request Withdrawal
+                  </>
+                )}
+              </CardTitle>
+              <Button variant="ghost" size="sm" onClick={() => setIsRequestModalOpen(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmitRequest} className="space-y-4">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <div className={cn('w-10 h-10 rounded-full flex items-center justify-center text-white font-bold', getCryptoInfo(selectedWallet.type).color)}>
+                      {getCryptoInfo(selectedWallet.type).icon}
+                    </div>
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Balance</p>
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">
-                        {formatCurrency(wallet.currentBalance || 0)}
+                      <p className="font-semibold">{getCryptoInfo(selectedWallet.type).name}</p>
+                      <p className="text-sm text-gray-500">
+                        Available: {Number(selectedWallet.tokenBalance).toFixed(6)} {getCryptoInfo(selectedWallet.type).symbol}
                       </p>
                     </div>
-
-                    <div>
-                      <p className="text-xs text-gray-500 mb-1">Last Synced</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {wallet.lastSyncedAt ? formatDate(wallet.lastSyncedAt) : 'Never'}
-                      </p>
-                    </div>
                   </div>
+                </div>
 
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => syncWalletMutation.mutate(wallet.id)}
-                      disabled={syncWalletMutation.isPending}
+                <div>
+                  <Label>Amount ({getCryptoInfo(selectedWallet.type).symbol})</Label>
+                  <Input
+                    type="number"
+                    step="0.000001"
+                    min="0"
+                    max={requestType === 'withdrawal' ? selectedWallet.tokenBalance : undefined}
+                    value={requestForm.amount}
+                    onChange={(e) => setRequestForm({ ...requestForm, amount: e.target.value })}
+                    placeholder="0.00"
+                    required
+                    className="mt-1"
+                  />
+                  {requestType === 'withdrawal' && (
+                    <button
+                      type="button"
+                      className="text-xs text-brand hover:underline mt-1"
+                      onClick={() => setRequestForm({ ...requestForm, amount: String(selectedWallet.tokenBalance) })}
                     >
-                      <RefreshCw className={`h-4 w-4 mr-1 ${syncWalletMutation.isPending ? 'animate-spin' : ''}`} />
-                      Sync
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => {
-                        if (confirm('Are you sure you want to remove this wallet?')) {
-                          deleteWalletMutation.mutate(wallet.id);
-                        }
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      Use max: {Number(selectedWallet.tokenBalance).toFixed(6)}
+                    </button>
+                  )}
+                </div>
+
+                {requestType === 'withdrawal' && (
+                  <div>
+                    <Label>Destination Wallet Address</Label>
+                    <Input
+                      value={requestForm.walletAddress}
+                      onChange={(e) => setRequestForm({ ...requestForm, walletAddress: e.target.value })}
+                      placeholder="Enter your external wallet address"
+                      required
+                      className="mt-1 font-mono text-sm"
+                    />
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                )}
+
+                <div>
+                  <Label>Notes (Optional)</Label>
+                  <Input
+                    value={requestForm.notes}
+                    onChange={(e) => setRequestForm({ ...requestForm, notes: e.target.value })}
+                    placeholder="Add a note..."
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-sm text-yellow-800 dark:text-yellow-200">
+                  <p className="font-medium">Please note:</p>
+                  <ul className="list-disc ml-4 mt-1 space-y-1">
+                    <li>Your request will be reviewed by an administrator</li>
+                    <li>Processing may take up to 24-48 hours</li>
+                    {requestType === 'withdrawal' && (
+                      <li>Ensure the wallet address is correct - transactions cannot be reversed</li>
+                    )}
+                  </ul>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={createRequestMutation.isPending}>
+                  {createRequestMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Submit Request
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

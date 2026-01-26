@@ -15,7 +15,6 @@ import VerifyEmailPendingPage from '@/pages/auth/VerifyEmailPendingPage';
 import UserDashboard from '@/pages/user/DashboardPage';
 import UserWallets from '@/pages/user/WalletsPage';
 import UserCases from '@/pages/user/CasesPage';
-import UserNewCase from '@/pages/user/NewCasePage';
 import UserCaseDetail from '@/pages/user/CaseDetailPage';
 import UserTickets from '@/pages/user/TicketsPage';
 import UserNewTicket from '@/pages/user/NewTicketPage';
@@ -107,7 +106,6 @@ function App() {
           }
         >
           <Route index element={<UserCases />} />
-          <Route path="new" element={<UserNewCase />} />
           <Route path=":id" element={<UserCaseDetail />} />
         </Route>
 
