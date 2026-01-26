@@ -185,9 +185,9 @@ export class AdminController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('search') search?: string,
-    @Query('blockchain') blockchain?: string,
+    @Query('type') type?: string,
   ) {
-    return this.walletsService.findAllAdmin(+page, +limit, { search, blockchain });
+    return this.walletsService.findAllAdmin(+page, +limit, { search, type });
   }
 
   @Get('settings')
