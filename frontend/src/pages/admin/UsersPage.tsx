@@ -139,54 +139,54 @@ export default function UsersPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Users</p>
-                <p className="text-2xl font-bold">{usersData?.total || 0}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Users</p>
+                <p className="text-lg sm:text-2xl font-bold">{usersData?.total || 0}</p>
               </div>
-              <Users className="h-8 w-8 text-blue-600" />
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 shrink-0" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Active</p>
-                <p className="text-2xl font-bold">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Active</p>
+                <p className="text-lg sm:text-2xl font-bold">
                   {users.filter((u: User) => u.status === 'active').length}
                 </p>
               </div>
-              <Shield className="h-8 w-8 text-green-600" />
+              <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 shrink-0" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Support Agents</p>
-                <p className="text-2xl font-bold">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Agents</p>
+                <p className="text-lg sm:text-2xl font-bold">
                   {users.filter((u: User) => u.role === 'support_agent').length}
                 </p>
               </div>
-              <Users className="h-8 w-8 text-purple-600" />
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 shrink-0" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Admins</p>
-                <p className="text-2xl font-bold">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Admins</p>
+                <p className="text-lg sm:text-2xl font-bold">
                   {users.filter((u: User) => u.role === 'admin').length}
                 </p>
               </div>
-              <Shield className="h-8 w-8 text-orange-600" />
+              <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 shrink-0" />
             </div>
           </CardContent>
         </Card>

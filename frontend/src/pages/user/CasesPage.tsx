@@ -102,7 +102,7 @@ export default function CasesPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -218,12 +218,13 @@ export default function CasesPage() {
                 className="hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => navigate(`/cases/${caseItem.id}`)}
               >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    {/* Icon and Title */}
+                    <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
                       <div
                         className={cn(
-                          'p-3 rounded-full',
+                          'p-2.5 sm:p-3 rounded-full shrink-0',
                           caseItem.status === 'RESOLVED'
                             ? 'bg-green-100'
                             : caseItem.status === 'IN_PROGRESS'
@@ -235,7 +236,7 @@ export default function CasesPage() {
                       >
                         <StatusIcon
                           className={cn(
-                            'h-6 w-6',
+                            'h-5 w-5 sm:h-6 sm:w-6',
                             caseItem.status === 'RESOLVED'
                               ? 'text-green-600'
                               : caseItem.status === 'IN_PROGRESS'
@@ -246,14 +247,14 @@ export default function CasesPage() {
                           )}
                         />
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
                           <h3 className="font-semibold text-gray-900 dark:text-white">
                             {caseItem.caseNumber}
                           </h3>
                           <span
                             className={cn(
-                              'px-2 py-0.5 text-xs font-medium rounded-full',
+                              'px-2 py-0.5 text-xs font-medium rounded-full shrink-0',
                               priorityColors[caseItem.priority]
                             )}
                           >
@@ -269,8 +270,9 @@ export default function CasesPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-6">
-                      <div className="text-right">
+                    {/* Status and Date */}
+                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 pl-11 sm:pl-0">
+                      <div className="text-left sm:text-right">
                         <div className="flex items-center text-sm text-gray-500">
                           <Calendar className="h-4 w-4 mr-1" />
                           {formatDate(caseItem.createdAt)}
@@ -278,19 +280,21 @@ export default function CasesPage() {
                         {caseItem.assignedAgent && (
                           <div className="flex items-center text-sm text-gray-500 mt-1">
                             <User className="h-4 w-4 mr-1" />
-                            {caseItem.assignedAgent.firstName} {caseItem.assignedAgent.lastName}
+                            <span className="truncate max-w-[100px]">
+                              {caseItem.assignedAgent.firstName}
+                            </span>
                           </div>
                         )}
                       </div>
                       <span
                         className={cn(
-                          'px-3 py-1 text-sm font-medium rounded-full',
+                          'px-2.5 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap',
                           getStatusColor(caseItem.status)
                         )}
                       >
                         {caseItem.status.replace(/_/g, ' ')}
                       </span>
-                      <ChevronRight className="h-5 w-5 text-gray-400" />
+                      <ChevronRight className="h-5 w-5 text-gray-400 hidden sm:block" />
                     </div>
                   </div>
                 </CardContent>

@@ -115,17 +115,17 @@ export default function AuditLogsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">Total Logs</p>
-            <p className="text-2xl font-bold">{logsData?.total || 0}</p>
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Total Logs</p>
+            <p className="text-lg sm:text-2xl font-bold">{logsData?.total || 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">Today</p>
-            <p className="text-2xl font-bold">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Today</p>
+            <p className="text-lg sm:text-2xl font-bold">
               {logs.filter((l: AuditLog) => {
                 const today = new Date().toDateString();
                 return new Date(l.createdAt).toDateString() === today;
@@ -134,17 +134,17 @@ export default function AuditLogsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">User Actions</p>
-            <p className="text-2xl font-bold">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">User Actions</p>
+            <p className="text-lg sm:text-2xl font-bold">
               {logs.filter((l: AuditLog) => l.entityType === 'USER').length}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">Security Events</p>
-            <p className="text-2xl font-bold">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Security</p>
+            <p className="text-lg sm:text-2xl font-bold">
               {logs.filter((l: AuditLog) => l.entityType === 'AUTH' || l.action === 'LOGIN').length}
             </p>
           </CardContent>
@@ -153,9 +153,9 @@ export default function AuditLogsPage() {
 
       {/* Filters */}
       <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="relative">
+        <CardContent className="p-3 sm:p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="relative sm:col-span-2 lg:col-span-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Search..."
@@ -165,7 +165,7 @@ export default function AuditLogsPage() {
               />
             </div>
             <select
-              className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
+              className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-sm"
               value={actionFilter}
               onChange={(e) => setActionFilter(e.target.value)}
             >
@@ -177,7 +177,7 @@ export default function AuditLogsPage() {
               <option value="LOGOUT">Logout</option>
             </select>
             <select
-              className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
+              className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-sm"
               value={entityFilter}
               onChange={(e) => setEntityFilter(e.target.value)}
             >

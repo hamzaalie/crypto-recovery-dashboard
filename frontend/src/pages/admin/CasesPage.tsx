@@ -140,41 +140,41 @@ export default function AdminCasesPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">Total</p>
-            <p className="text-2xl font-bold">{casesData?.total || 0}</p>
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Total</p>
+            <p className="text-lg sm:text-2xl font-bold">{casesData?.total || 0}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">Pending</p>
-            <p className="text-2xl font-bold text-yellow-600">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Pending</p>
+            <p className="text-lg sm:text-2xl font-bold text-yellow-600">
               {cases.filter((c: Case) => c.status === 'PENDING').length}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">In Progress</p>
-            <p className="text-2xl font-bold text-blue-600">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">In Progress</p>
+            <p className="text-lg sm:text-2xl font-bold text-blue-600">
               {cases.filter((c: Case) => c.status === 'IN_PROGRESS').length}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">Resolved</p>
-            <p className="text-2xl font-bold text-green-600">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Resolved</p>
+            <p className="text-lg sm:text-2xl font-bold text-green-600">
               {cases.filter((c: Case) => c.status === 'RESOLVED').length}
             </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-gray-500">Urgent</p>
-            <p className="text-2xl font-bold text-red-600">
+        <Card className="col-span-2 sm:col-span-1">
+          <CardContent className="p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Urgent</p>
+            <p className="text-lg sm:text-2xl font-bold text-red-600">
               {cases.filter((c: Case) => c.priority === 'URGENT').length}
             </p>
           </CardContent>

@@ -171,54 +171,54 @@ export default function AgentDashboardPage() {
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-4 sm:pt-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">Assigned Cases</p>
-                  <p className="text-2xl font-bold">{displayStats.assignedCases}</p>
-                  <p className="text-sm text-gray-500 mt-1">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-gray-500">Assigned Cases</p>
+                  <p className="text-lg sm:text-2xl font-bold">{displayStats.assignedCases}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
                     {displayStats.activeCases} active
                   </p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <FolderOpen className="h-6 w-6 text-blue-600" />
+                <div className="p-2 sm:p-3 bg-blue-100 rounded-lg shrink-0">
+                  <FolderOpen className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-4 sm:pt-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">Open Tickets</p>
-                  <p className="text-2xl font-bold">{displayStats.openTickets}</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {displayStats.assignedTickets} total assigned
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-gray-500">Open Tickets</p>
+                  <p className="text-lg sm:text-2xl font-bold">{displayStats.openTickets}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                    {displayStats.assignedTickets} assigned
                   </p>
                 </div>
-                <div className="p-3 bg-orange-100 rounded-lg">
-                  <Ticket className="h-6 w-6 text-orange-600" />
+                <div className="p-2 sm:p-3 bg-orange-100 rounded-lg shrink-0">
+                  <Ticket className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-4 sm:pt-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">Resolved Today</p>
-                  <p className="text-2xl font-bold">{displayStats.resolvedCasesToday}</p>
-                  <p className="text-sm text-green-600 mt-1 flex items-center">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    Great progress!
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-gray-500">Resolved Today</p>
+                  <p className="text-lg sm:text-2xl font-bold">{displayStats.resolvedCasesToday}</p>
+                  <p className="text-xs sm:text-sm text-green-600 mt-1 flex items-center">
+                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                    Great!
                   </p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                <div className="p-2 sm:p-3 bg-green-100 rounded-lg shrink-0">
+                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
               </div>
             </CardContent>

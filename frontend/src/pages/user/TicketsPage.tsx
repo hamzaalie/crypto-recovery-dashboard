@@ -83,7 +83,7 @@ export default function TicketsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -188,12 +188,13 @@ export default function TicketsPage() {
               className="hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => navigate(`/tickets/${ticket.id}`)}
             >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  {/* Icon and Title */}
+                  <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
                     <div
                       className={cn(
-                        'p-3 rounded-full',
+                        'p-2.5 sm:p-3 rounded-full shrink-0',
                         ticket.status === 'RESOLVED' || ticket.status === 'CLOSED'
                           ? 'bg-green-100'
                           : ticket.status === 'AWAITING_CUSTOMER'
@@ -203,7 +204,7 @@ export default function TicketsPage() {
                     >
                       <MessageSquare
                         className={cn(
-                          'h-6 w-6',
+                          'h-5 w-5 sm:h-6 sm:w-6',
                           ticket.status === 'RESOLVED' || ticket.status === 'CLOSED'
                             ? 'text-green-600'
                             : ticket.status === 'AWAITING_CUSTOMER'
@@ -212,28 +213,29 @@ export default function TicketsPage() {
                         )}
                       />
                     </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">
                           {ticket.subject}
                         </h3>
                         <span
                           className={cn(
-                            'px-2 py-0.5 text-xs font-medium rounded-full',
+                            'px-2 py-0.5 text-xs font-medium rounded-full shrink-0',
                             priorityColors[ticket.priority]
                           )}
                         >
                           {ticket.priority}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                         {ticket.ticketNumber} • {ticket.category.replace(/_/g, ' ')}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-6">
-                    <div className="text-right">
+                  {/* Status and Date */}
+                  <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 pl-11 sm:pl-0">
+                    <div className="text-left sm:text-right">
                       <p className="text-sm text-gray-500">
                         {formatDate(ticket.lastMessageAt || ticket.createdAt)}
                       </p>
@@ -243,13 +245,13 @@ export default function TicketsPage() {
                     </div>
                     <span
                       className={cn(
-                        'px-3 py-1 text-sm font-medium rounded-full',
+                        'px-2.5 py-1 text-xs sm:text-sm font-medium rounded-full whitespace-nowrap',
                         getStatusColor(ticket.status)
                       )}
                     >
                       {ticket.status.replace(/_/g, ' ')}
                     </span>
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                    <ChevronRight className="h-5 w-5 text-gray-400 hidden sm:block" />
                   </div>
                 </div>
               </CardContent>

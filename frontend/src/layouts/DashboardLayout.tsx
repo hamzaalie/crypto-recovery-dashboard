@@ -149,7 +149,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
+        <main className="flex-1 p-4 md:p-6 bg-gray-50 overflow-x-hidden overflow-y-auto">
           <Outlet />
         </main>
       </div>

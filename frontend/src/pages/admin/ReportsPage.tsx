@@ -226,57 +226,57 @@ export default function ReportsPage() {
       </Card>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="p-3 sm:pt-6 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Total Cases</p>
-                <p className="text-2xl font-bold">{displayStats.totalCases}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500">Total Cases</p>
+                <p className="text-lg sm:text-2xl font-bold">{displayStats.totalCases}</p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <FolderOpen className="h-6 w-6 text-blue-600" />
+              <div className="p-2 sm:p-3 bg-blue-100 rounded-lg shrink-0">
+                <FolderOpen className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
               </div>
             </div>
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex items-center flex-wrap">
               {displayStats.casesChange >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
               )}
               <span
                 className={cn(
-                  'ml-1 text-sm',
+                  'ml-1 text-xs sm:text-sm',
                   displayStats.casesChange >= 0 ? 'text-green-500' : 'text-red-500'
                 )}
               >
                 {Math.abs(displayStats.casesChange)}%
               </span>
-              <span className="ml-1 text-sm text-gray-500">vs last period</span>
+              <span className="ml-1 text-xs sm:text-sm text-gray-500 hidden sm:inline">vs last period</span>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="p-3 sm:pt-6 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Total Recovered</p>
-                <p className="text-2xl font-bold">{formatCurrency(displayStats.totalRecovered)}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500">Recovered</p>
+                <p className="text-lg sm:text-2xl font-bold truncate">{formatCurrency(displayStats.totalRecovered)}</p>
               </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <Wallet className="h-6 w-6 text-green-600" />
+              <div className="p-2 sm:p-3 bg-green-100 rounded-lg shrink-0">
+                <Wallet className="h-4 w-4 sm:h-6 sm:w-6 text-green-600" />
               </div>
             </div>
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex items-center flex-wrap">
               {displayStats.recoveryChange >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
               )}
               <span
                 className={cn(
-                  'ml-1 text-sm',
+                  'ml-1 text-xs sm:text-sm',
                   displayStats.recoveryChange >= 0 ? 'text-green-500' : 'text-red-500'
                 )}
               >
@@ -288,61 +288,61 @@ export default function ReportsPage() {
         </Card>
 
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="p-3 sm:pt-6 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Total Users</p>
-                <p className="text-2xl font-bold">{displayStats.totalUsers}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500">Total Users</p>
+                <p className="text-lg sm:text-2xl font-bold">{displayStats.totalUsers}</p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="p-2 sm:p-3 bg-purple-100 rounded-lg shrink-0">
+                <Users className="h-4 w-4 sm:h-6 sm:w-6 text-purple-600" />
               </div>
             </div>
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex items-center flex-wrap">
               {displayStats.usersChange >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
               )}
               <span
                 className={cn(
-                  'ml-1 text-sm',
+                  'ml-1 text-xs sm:text-sm',
                   displayStats.usersChange >= 0 ? 'text-green-500' : 'text-red-500'
                 )}
               >
                 {Math.abs(displayStats.usersChange)}%
               </span>
-              <span className="ml-1 text-sm text-gray-500">vs last period</span>
+              <span className="ml-1 text-xs sm:text-sm text-gray-500 hidden sm:inline">vs last period</span>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="p-3 sm:pt-6 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Avg Resolution Time</p>
-                <p className="text-2xl font-bold">{displayStats.avgResolutionTime} days</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-500">Avg Resolution</p>
+                <p className="text-lg sm:text-2xl font-bold">{displayStats.avgResolutionTime}d</p>
               </div>
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <Calendar className="h-6 w-6 text-orange-600" />
+              <div className="p-2 sm:p-3 bg-orange-100 rounded-lg shrink-0">
+                <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-orange-600" />
               </div>
             </div>
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex items-center flex-wrap">
               {displayStats.resolutionChange <= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
               )}
               <span
                 className={cn(
-                  'ml-1 text-sm',
+                  'ml-1 text-xs sm:text-sm',
                   displayStats.resolutionChange <= 0 ? 'text-green-500' : 'text-red-500'
                 )}
               >
                 {Math.abs(displayStats.resolutionChange)}%
               </span>
-              <span className="ml-1 text-sm text-gray-500">faster</span>
+              <span className="ml-1 text-xs sm:text-sm text-gray-500 hidden sm:inline">faster</span>
             </div>
           </CardContent>
         </Card>

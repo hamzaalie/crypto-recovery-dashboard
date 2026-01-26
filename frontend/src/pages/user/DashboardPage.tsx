@@ -126,22 +126,22 @@ export default function UserDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map((stat) => (
           <Link key={stat.title} to={stat.href}>
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-6">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                       {stat.title}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1 truncate">
                       {stat.value}
                     </p>
                   </div>
-                  <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                    <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                  <div className={`p-2 sm:p-3 rounded-full ${stat.bgColor} shrink-0`}>
+                    <stat.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${stat.color}`} />
                   </div>
                 </div>
               </CardContent>

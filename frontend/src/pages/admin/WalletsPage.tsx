@@ -83,39 +83,39 @@ export default function AdminWalletsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Wallets</p>
-                <p className="text-2xl font-bold">{walletsData?.total || 0}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Total Wallets</p>
+                <p className="text-lg sm:text-2xl font-bold">{walletsData?.total || 0}</p>
               </div>
-              <Wallet className="h-8 w-8 text-blue-600" />
+              <Wallet className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 shrink-0" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Balance</p>
-                <p className="text-2xl font-bold">{formatCurrency(totalBalance)}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Total Balance</p>
+                <p className="text-lg sm:text-2xl font-bold truncate">{formatCurrency(totalBalance)}</p>
               </div>
-              <CircleDollarSign className="h-8 w-8 text-green-600" />
+              <CircleDollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 shrink-0" />
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Verified Wallets</p>
-                <p className="text-2xl font-bold">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-500">Verified</p>
+                <p className="text-lg sm:text-2xl font-bold">
                   {wallets.filter((w: WalletItem) => w.status === 'verified').length}
                 </p>
               </div>
-              <Bitcoin className="h-8 w-8 text-orange-600" />
+              <Bitcoin className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600 shrink-0" />
             </div>
           </CardContent>
         </Card>
