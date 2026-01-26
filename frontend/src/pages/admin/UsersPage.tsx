@@ -121,12 +121,20 @@ export default function UsersPage() {
       const response = await api.post('/admin/users/invite', data);
       return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      toast({
-        title: 'Invite sent',
-        description: 'User has been created and an invite email has been sent.',
-      });
+      if (data.emailSent) {
+        toast({
+          title: 'Invite sent',
+          description: 'User has been created and an invite email has been sent.',
+        });
+      } else {
+        toast({
+          title: 'User created (email failed)',
+          description: `User was created but email failed: ${data.emailError || 'Unknown error'}. You can resend the invite.`,
+          variant: 'destructive',
+        });
+      }
       setIsModalOpen(false);
       setNewUserData({ email: '', firstName: '', lastName: '', role: 'user' });
     },

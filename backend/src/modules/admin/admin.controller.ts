@@ -81,14 +81,23 @@ export class AdminController {
     const frontendUrl = this.configService.get('FRONTEND_URL') || 'http://localhost:5173';
     const inviteLink = `${frontendUrl}/complete-signup?token=${user.emailVerificationToken}`;
     
-    await this.emailService.sendInviteEmail(
+    console.log(`📧 Sending invite email to: ${user.email}`);
+    console.log(`🔗 Invite link: ${inviteLink}`);
+    
+    const emailResult = await this.emailService.sendInviteEmail(
       user.email,
       user.firstName,
       inviteLink,
     );
 
+    console.log(`📬 Email result:`, emailResult);
+
     return {
-      message: 'User created and invite email sent',
+      message: emailResult.success 
+        ? 'User created and invite email sent' 
+        : 'User created but email failed to send',
+      emailSent: emailResult.success,
+      emailError: emailResult.success ? undefined : emailResult.message,
       user: {
         id: user.id,
         email: user.email,
