@@ -94,8 +94,8 @@ export default function AdminDashboard() {
       change: stats?.newUsersThisMonth || 0,
       changeLabel: 'this month',
       icon: Users,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100 dark:bg-blue-900/20',
+      color: 'text-brand',
+      bgColor: 'bg-brand-100 dark:bg-brand-900/20',
       href: '/admin/users',
     },
     {

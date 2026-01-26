@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth.store';
-import { LayoutDashboard, Wallet, FileText, MessageSquare, Users, Settings, LogOut, Shield, BarChart3, Mail, ClipboardList, User } from 'lucide-react';
+import { LayoutDashboard, Wallet, FileText, MessageSquare, Users, Settings, LogOut, BarChart3, Mail, ClipboardList, User } from 'lucide-react';
+import logoSmall from '@/assets/images/logo-small.png';
 
 const userNavItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -37,12 +38,12 @@ export default function DashboardLayout() {
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f0f0f0' }}>
       <div style={{ width: 250, background: '#1e293b', color: 'white', padding: 20, display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 30, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Shield size={28} />
+          <img src={logoSmall} alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
           Crypto Recovery
         </div>
         <nav style={{ flex: 1 }}>
           {navItems.map((item) => (
-            <NavLink key={item.href} to={item.href} end style={({ isActive }) => ({ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', marginBottom: 4, borderRadius: 8, textDecoration: 'none', color: 'white', background: isActive ? '#3b82f6' : 'transparent' })}>
+            <NavLink key={item.href} to={item.href} end style={({ isActive }) => ({ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', marginBottom: 4, borderRadius: 8, textDecoration: 'none', color: 'white', background: isActive ? '#007ac2' : 'transparent' })}>
               <item.icon size={20} />
               {item.label}
             </NavLink>

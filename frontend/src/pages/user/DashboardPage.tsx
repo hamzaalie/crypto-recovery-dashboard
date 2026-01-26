@@ -75,8 +75,8 @@ export default function UserDashboard() {
       title: 'Total Wallets',
       value: walletsArray.length || 0,
       icon: Wallet,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100 dark:bg-blue-900/20',
+      color: 'text-brand',
+      bgColor: 'bg-brand-100 dark:bg-brand-900/20',
       href: '/wallets',
     },
     {
