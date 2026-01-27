@@ -2,60 +2,56 @@ import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { EmailTemplate, EmailTemplateType } from './entities/email-template.entity';
 
 @Injectable()
 export class EmailService implements OnModuleInit {
-  private transporter: nodemailer.Transporter;
+  private resend: Resend;
+  private fromEmail: string;
 
   constructor(
     @InjectRepository(EmailTemplate)
     private templateRepository: Repository<EmailTemplate>,
     private configService: ConfigService,
   ) {
-    const smtpHost = this.configService.get('SMTP_HOST');
-    const smtpPort = parseInt(this.configService.get('SMTP_PORT') || '587');
-    const smtpUser = this.configService.get('SMTP_USER');
-    const smtpPass = this.configService.get('SMTP_PASS');
+    const resendApiKey = this.configService.get('RESEND_API_KEY');
+    this.fromEmail = this.configService.get('SMTP_FROM') || 'onboarding@resend.dev';
 
-    console.log('📧 SMTP Configuration:');
-    console.log(`   Host: ${smtpHost}`);
-    console.log(`   Port: ${smtpPort}`);
-    console.log(`   User: ${smtpUser}`);
-    console.log(`   Pass: ${smtpPass ? '****' + smtpPass.slice(-4) : 'NOT SET'}`);
+    console.log('📧 Resend Configuration:');
+    console.log(`   API Key: ${resendApiKey ? '****' + resendApiKey.slice(-8) : 'NOT SET'}`);
+    console.log(`   From: ${this.fromEmail}`);
 
-    // Initialize nodemailer transporter
-    this.transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465, // true for 465, false for other ports
-      auth: {
-        user: smtpUser,
-        pass: smtpPass,
-      },
-      tls: {
-        rejectUnauthorized: false, // Accept self-signed certificates
-      },
-      debug: true, // Enable debug output
-      logger: true, // Log to console
-    });
+    // Initialize Resend client
+    this.resend = new Resend(resendApiKey);
   }
 
   async onModuleInit() {
-    // Verify SMTP connection on startup
+    // Test Resend connection on startup
     try {
-      await this.transporter.verify();
-      console.log('✅ SMTP connection verified successfully!');
+      const resendApiKey = this.configService.get('RESEND_API_KEY');
+      if (resendApiKey) {
+        console.log('✅ Resend API key configured!');
+      } else {
+        console.error('❌ Resend API key not set!');
+      }
     } catch (error) {
-      console.error('❌ SMTP connection failed:', error.message);
+      console.error('❌ Resend initialization failed:', error.message);
     }
   }
 
   async testConnection() {
     try {
-      await this.transporter.verify();
-      return { success: true, message: 'SMTP connection successful' };
+      const resendApiKey = this.configService.get('RESEND_API_KEY');
+      if (!resendApiKey) {
+        return { success: false, message: 'RESEND_API_KEY not configured' };
+      }
+      // Test by checking domains (lightweight API call)
+      const { data, error } = await this.resend.domains.list();
+      if (error) {
+        return { success: false, message: error.message };
+      }
+      return { success: true, message: 'Resend connection successful', domains: data };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -86,31 +82,32 @@ export class EmailService implements OnModuleInit {
 
   async sendRawEmail(to: string, subject: string, htmlContent: string) {
     try {
-      const fromEmail = this.configService.get('SMTP_FROM') || this.configService.get('SMTP_USER');
-      
       console.log(`📨 Attempting to send email to: ${to}`);
       console.log(`📧 Subject: ${subject}`);
-      console.log(`👤 From: ${fromEmail}`);
+      console.log(`👤 From: ${this.fromEmail}`);
       
-      const info = await this.transporter.sendMail({
-        from: `"Crypto Recovery Platform" <${fromEmail}>`,
-        to,
+      const { data, error } = await this.resend.emails.send({
+        from: `Crypto Recovery Platform <${this.fromEmail}>`,
+        to: [to],
         subject,
         html: htmlContent,
       });
 
+      if (error) {
+        console.error(`❌ Failed to send email to ${to}`);
+        console.error(`🔴 Error Message: ${error.message}`);
+        return { success: false, message: error.message };
+      }
+
       console.log(`✅ Email sent successfully to ${to}`);
-      console.log(`📬 Message ID: ${info.messageId}`);
-      console.log(`📊 Response: ${info.response}`);
+      console.log(`📬 Email ID: ${data?.id}`);
       
-      return { success: true, message: 'Email sent successfully', messageId: info.messageId };
+      return { success: true, message: 'Email sent successfully', messageId: data?.id };
     } catch (error) {
       console.error(`❌ Failed to send email to ${to}`);
       console.error(`🔴 Error Message: ${error.message}`);
-      console.error(`🔴 Error Code: ${error.code}`);
-      console.error(`🔴 Full Error:`, error);
       
-      return { success: false, message: error.message, error: error.code };
+      return { success: false, message: error.message };
     }
   }
 
