@@ -55,12 +55,12 @@ interface User {
 }
 
 const CASE_TYPES = [
-  { value: 'WALLET_RECOVERY', label: 'Wallet Recovery' },
-  { value: 'SCAM', label: 'Scam Recovery' },
-  { value: 'THEFT', label: 'Theft / Hack' },
-  { value: 'EXCHANGE_ISSUE', label: 'Exchange Issue' },
-  { value: 'LOST_ACCESS', label: 'Lost Access' },
-  { value: 'OTHER', label: 'Other' },
+  { value: 'wallet_recovery', label: 'Wallet Recovery' },
+  { value: 'scam', label: 'Scam Recovery' },
+  { value: 'theft', label: 'Theft / Hack' },
+  { value: 'exchange_issue', label: 'Exchange Issue' },
+  { value: 'lost_access', label: 'Lost Access' },
+  { value: 'other', label: 'Other' },
 ];
 
 const priorityColors: Record<string, string> = {
@@ -81,8 +81,8 @@ export default function AdminCasesPage() {
     userId: '',
     title: '',
     description: '',
-    type: 'WALLET_RECOVERY',
-    priority: 'MEDIUM',
+    type: 'wallet_recovery',
+    priority: 'medium',
     estimatedLoss: 0,
     walletAddress: '',
     assignedToId: '',
@@ -136,8 +136,8 @@ export default function AdminCasesPage() {
         userId: '',
         title: '',
         description: '',
-        type: 'WALLET_RECOVERY',
-        priority: 'MEDIUM',
+        type: 'wallet_recovery',
+        priority: 'medium',
         estimatedLoss: 0,
         walletAddress: '',
         assignedToId: '',
@@ -533,10 +533,10 @@ export default function AdminCasesPage() {
                       value={newCase.priority}
                       onChange={(e) => setNewCase({ ...newCase, priority: e.target.value })}
                     >
-                      <option value="LOW">Low</option>
-                      <option value="MEDIUM">Medium</option>
-                      <option value="HIGH">High</option>
-                      <option value="URGENT">Urgent</option>
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
                     </select>
                   </div>
 
