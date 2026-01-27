@@ -156,8 +156,20 @@ export class AdminController {
   }
 
   @Post('cases')
-  createCase(@Body() createDto: any) {
-    return this.casesService.adminCreate(createDto);
+  async createCase(@Body() createDto: any) {
+    try {
+      // Clean up empty strings
+      const cleanedDto = {
+        ...createDto,
+        assignedToId: createDto.assignedToId || null,
+        walletAddress: createDto.walletAddress || null,
+        estimatedLoss: createDto.estimatedLoss || 0,
+      };
+      return await this.casesService.adminCreate(cleanedDto);
+    } catch (error) {
+      console.error('Error creating case:', error);
+      throw error;
+    }
   }
 
   @Get('cases/:id')

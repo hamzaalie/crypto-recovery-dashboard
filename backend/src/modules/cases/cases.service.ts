@@ -25,10 +25,10 @@ export class CasesService {
       description: createDto.description,
       type: createDto.type,
       priority: createDto.priority || CasePriority.MEDIUM,
-      estimatedLoss: createDto.estimatedLoss,
-      walletAddress: createDto.walletAddress,
+      estimatedLoss: createDto.estimatedLoss || 0,
+      walletAddress: createDto.walletAddress || null,
       userId: createDto.userId,
-      assignedToId: createDto.assignedToId,
+      assignedToId: createDto.assignedToId || null,
     });
     return this.casesRepository.save(caseEntity);
   }
