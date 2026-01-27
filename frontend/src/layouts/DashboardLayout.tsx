@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth.store';
 import { LayoutDashboard, Wallet, FileText, MessageSquare, Users, Settings, LogOut, BarChart3, Mail, ClipboardList, User, Menu, X } from 'lucide-react';
-import logoSmall from '@/assets/images/logo-small.png';
+import logo from '@/assets/images/logo.png';
 
 const userNavItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -74,7 +74,7 @@ export default function DashboardLayout() {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
           <div className="flex items-center gap-3">
-            <img src={logoSmall} alt="Logo" className="h-10 w-auto object-contain" />
+            <img src={logo} alt="Logo" className="h-12 w-auto object-contain" />
           </div>
           <button 
             onClick={() => setSidebarOpen(false)}
@@ -134,7 +134,7 @@ export default function DashboardLayout() {
           </button>
           
           <div className="flex items-center lg:hidden">
-            <img src={logoSmall} alt="Logo" className="h-8 w-auto object-contain" />
+            <img src={logo} alt="Logo" className="h-10 w-auto object-contain" />
           </div>
           
           <div className="flex-1" />

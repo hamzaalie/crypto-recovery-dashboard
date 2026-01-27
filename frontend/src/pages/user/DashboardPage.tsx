@@ -117,12 +117,6 @@ export default function UserDashboard() {
             Here's an overview of your crypto recovery status
           </p>
         </div>
-        <Link to="/cases/new">
-          <Button className="w-full sm:w-auto">
-            <FileText className="mr-2 h-4 w-4" />
-            New Recovery Case
-          </Button>
-        </Link>
       </div>
 
       {/* Stats Grid */}
@@ -206,11 +200,7 @@ export default function UserDashboard() {
               <div className="text-center py-8">
                 <FileText className="mx-auto h-12 w-12 text-gray-400" />
                 <p className="mt-2 text-gray-500 dark:text-gray-400">No cases yet</p>
-                <Link to="/cases/new">
-                  <Button variant="outline" className="mt-4">
-                    Create your first case
-                  </Button>
-                </Link>
+                <p className="text-sm text-gray-400">Cases will appear here once assigned by admin</p>
               </div>
             )}
           </CardContent>
