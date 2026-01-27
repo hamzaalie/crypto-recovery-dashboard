@@ -79,3 +79,33 @@ export class AdminUpdateCaseDto extends UpdateCaseDto {
   @IsString()
   internalNotes?: string;
 }
+
+export class AdminCreateCaseDto {
+  @IsString()
+  userId: string;
+
+  @IsString()
+  title: string;
+
+  @IsString()
+  description: string;
+
+  @IsEnum(CaseType)
+  type: CaseType;
+
+  @IsOptional()
+  @IsEnum(CasePriority)
+  priority?: CasePriority;
+
+  @IsOptional()
+  @IsNumber()
+  estimatedLoss?: number;
+
+  @IsOptional()
+  @IsString()
+  walletAddress?: string;
+
+  @IsOptional()
+  @IsString()
+  assignedToId?: string;
+}

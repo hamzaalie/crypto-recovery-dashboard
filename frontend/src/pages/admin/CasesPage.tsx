@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Loader2,
   X,
+  Plus,
 } from 'lucide-react';
 
 interface Case {
@@ -46,6 +47,22 @@ interface Agent {
   email: string;
 }
 
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+const CASE_TYPES = [
+  { value: 'WALLET_RECOVERY', label: 'Wallet Recovery' },
+  { value: 'SCAM', label: 'Scam Recovery' },
+  { value: 'THEFT', label: 'Theft / Hack' },
+  { value: 'EXCHANGE_ISSUE', label: 'Exchange Issue' },
+  { value: 'LOST_ACCESS', label: 'Lost Access' },
+  { value: 'OTHER', label: 'Other' },
+];
+
 const priorityColors: Record<string, string> = {
   LOW: 'bg-gray-100 text-gray-800',
   MEDIUM: 'bg-blue-100 text-blue-800',
@@ -59,6 +76,17 @@ export default function AdminCasesPage() {
   const [priorityFilter, setPriorityFilter] = useState<string>('');
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newCase, setNewCase] = useState({
+    userId: '',
+    title: '',
+    description: '',
+    type: 'WALLET_RECOVERY',
+    priority: 'MEDIUM',
+    estimatedLoss: 0,
+    walletAddress: '',
+    assignedToId: '',
+  });
 
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -80,6 +108,47 @@ export default function AdminCasesPage() {
     queryFn: async () => {
       const response = await api.get('/admin/users?role=support_agent');
       return response.data.data;
+    },
+  });
+
+  // Fetch users for dropdown
+  const { data: usersData } = useQuery({
+    queryKey: ['admin-users-list'],
+    queryFn: async () => {
+      const response = await api.get('/admin/users?role=user&limit=100');
+      return response.data;
+    },
+  });
+
+  const users: User[] = usersData?.data || [];
+
+  // Create case mutation
+  const createCaseMutation = useMutation({
+    mutationFn: async (data: typeof newCase) => {
+      const response = await api.post('/admin/cases', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-cases'] });
+      toast({ title: 'Case created', description: 'Case has been created successfully.' });
+      setIsCreateModalOpen(false);
+      setNewCase({
+        userId: '',
+        title: '',
+        description: '',
+        type: 'WALLET_RECOVERY',
+        priority: 'MEDIUM',
+        estimatedLoss: 0,
+        walletAddress: '',
+        assignedToId: '',
+      });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Error',
+        description: err.response?.data?.message || 'Failed to create case',
+        variant: 'destructive',
+      });
     },
   });
 
@@ -137,6 +206,10 @@ export default function AdminCasesPage() {
             Manage all recovery cases
           </p>
         </div>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Create Case
+        </Button>
       </div>
 
       {/* Stats */}
@@ -375,6 +448,153 @@ export default function AdminCasesPage() {
                   <p className="font-medium text-green-600">{formatCurrency(selectedCase.recoveredAmount)}</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Create Case Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setIsCreateModalOpen(false)} />
+          <Card className="relative z-10 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Create New Case</CardTitle>
+                  <CardDescription>Create a recovery case for a user</CardDescription>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setIsCreateModalOpen(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={(e) => { e.preventDefault(); createCaseMutation.mutate(newCase); }} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>User *</Label>
+                  <select
+                    className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
+                    value={newCase.userId}
+                    onChange={(e) => setNewCase({ ...newCase, userId: e.target.value })}
+                    required
+                  >
+                    <option value="">Select a user...</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.firstName} {user.lastName} ({user.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Title *</Label>
+                  <Input
+                    value={newCase.title}
+                    onChange={(e) => setNewCase({ ...newCase, title: e.target.value })}
+                    placeholder="Case title"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Type *</Label>
+                  <select
+                    className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
+                    value={newCase.type}
+                    onChange={(e) => setNewCase({ ...newCase, type: e.target.value })}
+                    required
+                  >
+                    {CASE_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Description *</Label>
+                  <textarea
+                    className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 min-h-[100px]"
+                    value={newCase.description}
+                    onChange={(e) => setNewCase({ ...newCase, description: e.target.value })}
+                    placeholder="Describe the case details..."
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Priority</Label>
+                    <select
+                      className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
+                      value={newCase.priority}
+                      onChange={(e) => setNewCase({ ...newCase, priority: e.target.value })}
+                    >
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                      <option value="URGENT">Urgent</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Estimated Loss (USD)</Label>
+                    <Input
+                      type="number"
+                      value={newCase.estimatedLoss || ''}
+                      onChange={(e) => setNewCase({ ...newCase, estimatedLoss: parseFloat(e.target.value) || 0 })}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Wallet Address</Label>
+                  <Input
+                    value={newCase.walletAddress}
+                    onChange={(e) => setNewCase({ ...newCase, walletAddress: e.target.value })}
+                    placeholder="0x..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Assign Agent</Label>
+                  <select
+                    className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800"
+                    value={newCase.assignedToId}
+                    onChange={(e) => setNewCase({ ...newCase, assignedToId: e.target.value })}
+                  >
+                    <option value="">Unassigned</option>
+                    {agents?.map((agent) => (
+                      <option key={agent.id} value={agent.id}>
+                        {agent.firstName} {agent.lastName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setIsCreateModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={createCaseMutation.isPending}
+                  >
+                    {createCaseMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Create Case
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </div>

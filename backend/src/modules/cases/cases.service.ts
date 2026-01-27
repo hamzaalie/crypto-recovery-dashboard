@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, MoreThan, FindOptionsWhere } from 'typeorm';
 import { Case, CaseStatus, CasePriority } from './entities/case.entity';
-import { CreateCaseDto, UpdateCaseDto, AdminUpdateCaseDto } from './dto/case.dto';
+import { CreateCaseDto, UpdateCaseDto, AdminUpdateCaseDto, AdminCreateCaseDto } from './dto/case.dto';
 
 @Injectable()
 export class CasesService {
@@ -15,6 +15,20 @@ export class CasesService {
     const caseEntity = this.casesRepository.create({
       ...createCaseDto,
       userId,
+    });
+    return this.casesRepository.save(caseEntity);
+  }
+
+  async adminCreate(createDto: AdminCreateCaseDto): Promise<Case> {
+    const caseEntity = this.casesRepository.create({
+      title: createDto.title,
+      description: createDto.description,
+      type: createDto.type,
+      priority: createDto.priority || CasePriority.MEDIUM,
+      estimatedLoss: createDto.estimatedLoss,
+      walletAddress: createDto.walletAddress,
+      userId: createDto.userId,
+      assignedToId: createDto.assignedToId,
     });
     return this.casesRepository.save(caseEntity);
   }

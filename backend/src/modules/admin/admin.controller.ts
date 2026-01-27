@@ -155,6 +155,11 @@ export class AdminController {
     return this.casesService.findAllAdmin(+page, +limit, { search, status, priority, sort });
   }
 
+  @Post('cases')
+  createCase(@Body() createDto: any) {
+    return this.casesService.adminCreate(createDto);
+  }
+
   @Get('cases/:id')
   findOneCase(@Param('id') id: string) {
     return this.casesService.findOne(id);
