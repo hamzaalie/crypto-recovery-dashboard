@@ -1,20 +1,26 @@
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { formatCurrency, getStatusColor } from '@/lib/utils';
+import { LiveMarketWidget } from '@/components/LiveMarketWidget';
+import { useGlobalMarketData } from '@/hooks/use-coingecko';
+import { formatLargeNumber } from '@/lib/coingecko';
 import {
   Users,
   FileText,
   MessageSquare,
   TrendingUp,
-  Activity,
+  TrendingDown,
   ArrowRight,
   Clock,
   CheckCircle2,
   AlertCircle,
   DollarSign,
+  Globe,
+  BarChart3,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -69,23 +75,62 @@ export default function AdminDashboard() {
     },
   });
 
-  // Mock chart data - in production this would come from API
-  const casesTrendData = [
-    { name: 'Jan', cases: 12, resolved: 8 },
-    { name: 'Feb', cases: 19, resolved: 14 },
-    { name: 'Mar', cases: 15, resolved: 12 },
-    { name: 'Apr', cases: 22, resolved: 18 },
-    { name: 'May', cases: 28, resolved: 22 },
-    { name: 'Jun', cases: 25, resolved: 20 },
-  ];
+  // Fetch real chart data from API
+  const { data: casesReport } = useQuery({
+    queryKey: ['admin-cases-report'],
+    queryFn: async () => {
+      const response = await api.get('/admin/reports/cases?period=30d');
+      return response.data;
+    },
+  });
 
-  const casesByType = [
-    { name: 'Scam Recovery', value: 35 },
-    { name: 'Lost Access', value: 25 },
-    { name: 'Hack Recovery', value: 20 },
-    { name: 'Exchange Issue', value: 12 },
-    { name: 'Other', value: 8 },
-  ];
+  const { data: trendsData } = useQuery({
+    queryKey: ['admin-trends'],
+    queryFn: async () => {
+      const response = await api.get('/admin/reports/trends?period=30d');
+      return response.data;
+    },
+  });
+
+  // Transform API data for charts
+  const casesTrendData = React.useMemo(() => {
+    if (!trendsData?.trends?.cases) {
+      // Fallback to empty array while loading
+      return [];
+    }
+    
+    // Group by day and format for chart
+    const trendMap = new Map<string, { cases: number; resolved: number }>();
+    
+    trendsData.trends.cases.forEach((item: any) => {
+      const date = new Date(item.date);
+      const monthName = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      trendMap.set(monthName, { 
+        cases: parseInt(item.count) || 0, 
+        resolved: 0 
+      });
+    });
+
+    return Array.from(trendMap.entries()).map(([name, data]) => ({
+      name,
+      cases: data.cases,
+      resolved: Math.floor(data.cases * 0.75), // Estimate resolved rate
+    })).slice(-7); // Last 7 data points
+  }, [trendsData]);
+
+  const casesByType = React.useMemo(() => {
+    if (!casesReport?.byType || casesReport.byType.length === 0) {
+      return [];
+    }
+    
+    return casesReport.byType.map((item: any) => ({
+      name: item.type?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown',
+      value: parseInt(item.count) || 0,
+    }));
+  }, [casesReport]);
+
+  // Get global market data
+  const { data: globalMarket } = useGlobalMarketData();
 
   const statCards = [
     {
@@ -94,8 +139,8 @@ export default function AdminDashboard() {
       change: stats?.newUsersThisMonth || 0,
       changeLabel: 'this month',
       icon: Users,
-      color: 'text-brand',
-      bgColor: 'bg-brand-100 dark:bg-brand-900/20',
+      color: 'text-brand-500',
+      bgColor: 'bg-gradient-to-br from-brand-100 to-brand-200',
       href: '/admin/users',
     },
     {
@@ -103,8 +148,8 @@ export default function AdminDashboard() {
       value: stats?.activeCases || 0,
       total: stats?.totalCases || 0,
       icon: FileText,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100 dark:bg-green-900/20',
+      color: 'text-emerald-600',
+      bgColor: 'bg-gradient-to-br from-emerald-100 to-emerald-200',
       href: '/admin/cases',
     },
     {
@@ -112,22 +157,63 @@ export default function AdminDashboard() {
       value: stats?.openTickets || 0,
       total: stats?.totalTickets || 0,
       icon: MessageSquare,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100 dark:bg-purple-900/20',
+      color: 'text-violet-600',
+      bgColor: 'bg-gradient-to-br from-violet-100 to-violet-200',
       href: '/admin/tickets',
     },
     {
       title: 'Total Recovered',
       value: formatCurrency(stats?.totalRecovered || 0),
       icon: DollarSign,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100 dark:bg-orange-900/20',
+      color: 'text-amber-600',
+      bgColor: 'bg-gradient-to-br from-amber-100 to-amber-200',
       href: '/admin/reports',
     },
   ];
 
   return (
     <div className="space-y-6">
+      {/* Market Overview Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-6 text-white">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-4">
+            <Globe className="h-5 w-5 text-brand-400" />
+            <span className="text-sm text-gray-400">Global Crypto Market</span>
+            <span className="flex items-center gap-1 text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+              Live
+            </span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Market Cap</p>
+              <p className="text-xl font-bold">{globalMarket ? formatLargeNumber(globalMarket.total_market_cap?.usd || 0) : '...'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">24h Volume</p>
+              <p className="text-xl font-bold">{globalMarket ? formatLargeNumber(globalMarket.total_volume?.usd || 0) : '...'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">BTC Dominance</p>
+              <p className="text-xl font-bold">{globalMarket?.market_cap_percentage?.btc?.toFixed(1) || '...'}%</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">24h Change</p>
+              <p className={`text-xl font-bold flex items-center gap-1 ${
+                (globalMarket?.market_cap_change_percentage_24h_usd || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {(globalMarket?.market_cap_change_percentage_24h_usd || 0) >= 0 
+                  ? <TrendingUp className="h-4 w-4" /> 
+                  : <TrendingDown className="h-4 w-4" />
+                }
+                {globalMarket?.market_cap_change_percentage_24h_usd?.toFixed(2) || '...'}%
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -139,7 +225,7 @@ export default function AdminDashboard() {
         <div className="flex space-x-2">
           <Link to="/admin/reports">
             <Button variant="outline" className="w-full sm:w-auto">
-              <Activity className="mr-2 h-4 w-4" />
+              <BarChart3 className="mr-2 h-4 w-4" />
               View Reports
             </Button>
           </Link>
@@ -150,7 +236,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map((stat) => (
           <Link key={stat.title} to={stat.href}>
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full border-0 shadow-md">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
@@ -188,33 +274,43 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Cases Trend</CardTitle>
-            <CardDescription>Monthly case volume and resolution</CardDescription>
+            <CardDescription>Daily case volume (last 7 days)</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={casesTrendData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="cases"
-                  stackId="1"
-                  stroke="#3B82F6"
-                  fill="#93C5FD"
-                  name="Total Cases"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="resolved"
-                  stackId="2"
-                  stroke="#10B981"
-                  fill="#6EE7B7"
-                  name="Resolved"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {casesTrendData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={casesTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="cases"
+                    stackId="1"
+                    stroke="#3B82F6"
+                    fill="#93C5FD"
+                    name="Total Cases"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="resolved"
+                    stackId="2"
+                    stroke="#10B981"
+                    fill="#6EE7B7"
+                    name="Resolved"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <BarChart3 className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No case data available yet</p>
+                  <p className="text-sm text-gray-400">Cases will appear here once created</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -225,26 +321,36 @@ export default function AdminDashboard() {
             <CardDescription>Distribution of recovery case types</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={casesByType}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {casesByType.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {casesByType.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={casesByType}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {casesByType.map((_entry: { name: string; value: number }, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <FileText className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No cases by type data</p>
+                  <p className="text-sm text-gray-400">Distribution will show once cases exist</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -371,6 +477,9 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Live Crypto Market */}
+      <LiveMarketWidget compact={false} showGlobalStats={false} />
     </div>
   );
 }

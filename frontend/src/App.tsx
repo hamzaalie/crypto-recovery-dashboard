@@ -1,6 +1,18 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
+import { CookieBanner } from '@/components/ui/cookie-banner';
 import { useAuthStore } from '@/stores/auth.store';
+
+// Public pages
+import LandingPage from '@/pages/public/LandingPage';
+import AboutPage from '@/pages/public/AboutPage';
+import ContactPage from '@/pages/public/ContactPage';
+import HelpPage from '@/pages/public/HelpPage';
+import TermsPage from '@/pages/public/TermsPage';
+import PrivacyPage from '@/pages/public/PrivacyPage';
+import CookiesPage from '@/pages/public/CookiesPage';
+import StatusPage from '@/pages/public/StatusPage';
+import NotFoundPage from '@/pages/public/NotFoundPage';
 
 // Auth pages
 import LoginPage from '@/pages/auth/LoginPage';
@@ -61,7 +73,17 @@ function App() {
   return (
     <>
       <Routes>
-        {/* Public routes */}
+        {/* Public pages */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/cookies" element={<CookiesPage />} />
+        <Route path="/status" element={<StatusPage />} />
+
+        {/* Auth routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -171,18 +193,21 @@ function App() {
 
         {/* Redirects */}
         <Route
-          path="/"
+          path="/home"
           element={
             isAuthenticated ? (
               <Navigate to={getDefaultDashboard()} replace />
             ) : (
-              <Navigate to="/login" replace />
+              <Navigate to="/" replace />
             )
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        
+        {/* 404 Page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Toaster />
+      <CookieBanner />
     </>
   );
 }

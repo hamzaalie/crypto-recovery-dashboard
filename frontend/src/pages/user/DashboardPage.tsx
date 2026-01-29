@@ -5,15 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { formatCurrency, formatDate, getStatusColor } from '@/lib/utils';
+import { LiveMarketWidget } from '@/components/LiveMarketWidget';
+import { useWalletWithLivePrices } from '@/hooks/use-coingecko';
 import {
   Wallet,
   FileText,
   MessageSquare,
   ArrowRight,
   TrendingUp,
+  TrendingDown,
   Clock,
   CheckCircle2,
   AlertCircle,
+  Sparkles,
+  Shield,
+  Activity,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -49,6 +55,9 @@ export default function UserDashboard() {
     },
   });
 
+  // Use CoinGecko live prices for wallets
+  const { totalValue: liveTotalValue, wallets: walletsWithPrices } = useWalletWithLivePrices(wallets);
+
   const { data: cases } = useQuery({
     queryKey: ['cases'],
     queryFn: async () => {
@@ -70,52 +79,83 @@ export default function UserDashboard() {
   const casesArray = Array.isArray(cases) ? cases : [];
   const ticketsArray = Array.isArray(tickets) ? tickets : [];
 
+  // Calculate total 24h change across portfolio
+  const totalChange24h = walletsWithPrices?.reduce((sum, w) => {
+    const change = (w.liveUsdValue * w.priceChange24h) / 100;
+    return sum + change;
+  }, 0) || 0;
+  const percentChange24h = liveTotalValue > 0 ? (totalChange24h / liveTotalValue) * 100 : 0;
+
   const statCards = [
     {
       title: 'Total Wallets',
       value: walletsArray.length || 0,
       icon: Wallet,
-      color: 'text-brand',
-      bgColor: 'bg-brand-100 dark:bg-brand-900/20',
+      color: 'text-brand-500',
+      bgColor: 'bg-gradient-to-br from-brand-100 to-brand-200',
       href: '/wallets',
     },
     {
       title: 'Active Cases',
       value: casesArray.filter((c: any) => c.status !== 'CLOSED' && c.status !== 'RESOLVED')?.length || 0,
-      icon: FileText,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100 dark:bg-green-900/20',
+      icon: Shield,
+      color: 'text-emerald-600',
+      bgColor: 'bg-gradient-to-br from-emerald-100 to-emerald-200',
       href: '/cases',
     },
     {
       title: 'Open Tickets',
       value: ticketsArray.filter((t: any) => t.status !== 'CLOSED' && t.status !== 'RESOLVED')?.length || 0,
       icon: MessageSquare,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100 dark:bg-purple-900/20',
+      color: 'text-violet-600',
+      bgColor: 'bg-gradient-to-br from-violet-100 to-violet-200',
       href: '/tickets',
     },
     {
-      title: 'Total Balance',
-      value: formatCurrency(walletsArray.reduce((acc: number, w: any) => acc + (w.currentBalance || 0), 0) || 0),
-      icon: TrendingUp,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100 dark:bg-orange-900/20',
-      href: '/wallets',
+      title: 'Recovery Rate',
+      value: casesArray.length > 0 
+        ? `${Math.round((casesArray.filter((c: any) => c.status === 'RESOLVED').length / casesArray.length) * 100)}%` 
+        : 'N/A',
+      icon: Activity,
+      color: 'text-amber-600',
+      bgColor: 'bg-gradient-to-br from-amber-100 to-amber-200',
+      href: '/cases',
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Welcome back, {user?.firstName}!
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400">
-            Here's an overview of your crypto recovery status
-          </p>
+      {/* Portfolio Hero Section */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-6 md:p-8 text-white">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
+        <div className="relative">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-5 w-5 text-brand-400" />
+                <span className="text-sm text-gray-400">Portfolio Value (Live)</span>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold">
+                {formatCurrency(liveTotalValue || 0)}
+              </h1>
+              <div className="flex items-center gap-2 mt-2">
+                {percentChange24h >= 0 ? (
+                  <TrendingUp className="h-4 w-4 text-green-400" />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-red-400" />
+                )}
+                <span className={percentChange24h >= 0 ? 'text-green-400' : 'text-red-400'}>
+                  {percentChange24h >= 0 ? '+' : ''}{percentChange24h.toFixed(2)}%
+                </span>
+                <span className="text-gray-500 text-sm">24h</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-start md:items-end gap-1">
+              <p className="text-sm text-gray-400">Welcome back,</p>
+              <p className="text-xl font-semibold">{user?.firstName} {user?.lastName}</p>
+              <p className="text-xs text-gray-500">{walletsArray.length} assets tracked</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -123,7 +163,7 @@ export default function UserDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map((stat) => (
           <Link key={stat.title} to={stat.href}>
-            <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <Card className="hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full border-0 shadow-md">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
@@ -320,6 +360,9 @@ export default function UserDashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Live Crypto Market */}
+      <LiveMarketWidget compact={false} showGlobalStats={true} />
     </div>
   );
 }

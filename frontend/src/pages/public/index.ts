@@ -1,0 +1,9 @@
+export { default as LandingPage } from './LandingPage';
+export { default as AboutPage } from './AboutPage';
+export { default as ContactPage } from './ContactPage';
+export { default as HelpPage } from './HelpPage';
+export { default as TermsPage } from './TermsPage';
+export { default as PrivacyPage } from './PrivacyPage';
+export { default as CookiesPage } from './CookiesPage';
+export { default as StatusPage } from './StatusPage';
+export { default as NotFoundPage } from './NotFoundPage';

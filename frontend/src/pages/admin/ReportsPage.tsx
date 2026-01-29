@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,8 +9,6 @@ import { formatCurrency, cn } from '@/lib/utils';
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -31,9 +29,23 @@ import {
   FolderOpen,
   Wallet,
   Calendar,
+  Loader2,
+  BarChart3,
 } from 'lucide-react';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
+
+// Get period string from date range
+function getPeriodFromRange(startDate: string, endDate: string): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+  
+  if (diffDays <= 7) return '7d';
+  if (diffDays <= 30) return '30d';
+  if (diffDays <= 90) return '90d';
+  return '1y';
+}
 
 export default function ReportsPage() {
   const [dateRange, setDateRange] = useState({
@@ -41,98 +53,153 @@ export default function ReportsPage() {
     endDate: new Date().toISOString().split('T')[0],
   });
 
-  const { data: stats, isLoading: _statsLoading } = useQuery({
-    queryKey: ['admin-reports-stats', dateRange],
+  const period = useMemo(() => getPeriodFromRange(dateRange.startDate, dateRange.endDate), [dateRange]);
+
+  // Fetch overview stats
+  const { data: overviewData, isLoading: overviewLoading } = useQuery({
+    queryKey: ['admin-reports-overview', period],
     queryFn: async () => {
-      const response = await api.get('/admin/reports/overview', { params: { period: '30d' } });
+      const response = await api.get('/admin/reports/overview', { params: { period } });
       return response.data;
     },
   });
 
-  const { data: casesTrend, isLoading: _trendLoading } = useQuery({
-    queryKey: ['admin-reports-cases-trend', dateRange],
+  // Fetch cases report with trends
+  const { data: casesReport, isLoading: casesLoading } = useQuery({
+    queryKey: ['admin-reports-cases', period],
     queryFn: async () => {
-      const response = await api.get('/admin/reports/cases', { params: { period: '30d', groupBy: 'status' } });
+      const response = await api.get('/admin/reports/cases', { params: { period, groupBy: 'status' } });
       return response.data;
     },
   });
 
-  const { data: agentPerformance, isLoading: _agentLoading } = useQuery({
-    queryKey: ['admin-reports-agent-performance', dateRange],
+  // Fetch recovery stats
+  const { data: recoveryData, isLoading: recoveryLoading } = useQuery({
+    queryKey: ['admin-reports-recovery', period],
     queryFn: async () => {
-      const response = await api.get('/admin/reports/users', { params: { period: '30d' } });
+      const response = await api.get('/admin/reports/recovery', { params: { period } });
       return response.data;
     },
   });
 
-  useQuery({
-    queryKey: ['admin-reports-recovery', dateRange],
+  // Fetch trends
+  const { data: trendsData, isLoading: trendsLoading } = useQuery({
+    queryKey: ['admin-reports-trends', period],
     queryFn: async () => {
-      const response = await api.get('/admin/reports/recovery', { params: { period: '30d' } });
+      const response = await api.get('/admin/reports/trends', { params: { period } });
       return response.data;
     },
   });
 
-  // Mock data for demo
-  const mockStats = {
-    totalCases: 245,
-    casesChange: 12.5,
-    totalRecovered: 1250000,
-    recoveryChange: 8.3,
-    totalUsers: 1567,
-    usersChange: 15.2,
-    avgResolutionTime: 4.2,
-    resolutionChange: -10.5,
-  };
+  // Fetch users report
+  const { data: usersReport } = useQuery({
+    queryKey: ['admin-reports-users', period],
+    queryFn: async () => {
+      const response = await api.get('/admin/reports/users', { params: { period } });
+      return response.data;
+    },
+  });
 
-  const mockTrend = [
-    { date: 'Jan', newCases: 45, resolved: 38, recovered: 125000 },
-    { date: 'Feb', newCases: 52, resolved: 48, recovered: 185000 },
-    { date: 'Mar', newCases: 61, resolved: 55, recovered: 220000 },
-    { date: 'Apr', newCases: 48, resolved: 52, recovered: 175000 },
-    { date: 'May', newCases: 55, resolved: 49, recovered: 198000 },
-    { date: 'Jun', newCases: 67, resolved: 62, recovered: 280000 },
-  ];
+  const isLoading = overviewLoading || casesLoading || recoveryLoading || trendsLoading;
 
-  const mockAgentPerformance = [
-    { name: 'John Smith', casesHandled: 45, avgTime: 3.2, satisfaction: 4.8 },
-    { name: 'Sarah Wilson', casesHandled: 52, avgTime: 2.8, satisfaction: 4.9 },
-    { name: 'Mike Johnson', casesHandled: 38, avgTime: 3.5, satisfaction: 4.6 },
-    { name: 'Emily Brown', casesHandled: 41, avgTime: 3.1, satisfaction: 4.7 },
-  ];
+  // Transform API data for display
+  const displayStats = useMemo(() => {
+    const overview = overviewData?.overview || {};
+    const stats = overviewData?.stats || {};
+    
+    // Calculate changes (compare period vs total)
+    const casesChange = overview.totalCases > 0 
+      ? ((overview.casesInPeriod / overview.totalCases) * 100).toFixed(1) 
+      : 0;
+    const recoveryChange = overview.totalRecovered > 0 
+      ? ((overview.recoveredInPeriod / overview.totalRecovered) * 100).toFixed(1) 
+      : 0;
+    const usersChange = overview.totalUsers > 0 
+      ? ((overview.usersInPeriod / overview.totalUsers) * 100).toFixed(1) 
+      : 0;
+    
+    return {
+      totalCases: overview.totalCases || stats?.cases?.total || 0,
+      casesInPeriod: overview.casesInPeriod || 0,
+      casesChange: parseFloat(casesChange as string) || 0,
+      totalRecovered: overview.totalRecovered || recoveryData?.totalRecovered || 0,
+      recoveredInPeriod: overview.recoveredInPeriod || recoveryData?.recoveredInPeriod || 0,
+      recoveryChange: parseFloat(recoveryChange as string) || 0,
+      totalUsers: overview.totalUsers || stats?.users?.total || 0,
+      usersInPeriod: overview.usersInPeriod || 0,
+      usersChange: parseFloat(usersChange as string) || 0,
+      successRate: recoveryData?.successRate || 0,
+      avgResolutionTime: 0, // Would need additional tracking
+      resolutionChange: 0,
+    };
+  }, [overviewData, recoveryData]);
 
-  const mockCasesByStatus = [
-    { name: 'Pending', value: 35 },
-    { name: 'In Progress', value: 45 },
-    { name: 'Under Review', value: 25 },
-    { name: 'Resolved', value: 80 },
-    { name: 'Closed', value: 60 },
-  ];
+  // Transform trend data for charts
+  const displayTrend = useMemo(() => {
+    if (!trendsData?.trends?.cases) return [];
+    
+    const caseTrends = trendsData.trends.cases || [];
+    
+    // Merge trends by date
+    const trendMap = new Map<string, any>();
+    
+    caseTrends.forEach((item: any) => {
+      const date = new Date(item.date);
+      const key = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      trendMap.set(key, {
+        date: key,
+        newCases: parseInt(item.count) || 0,
+        resolved: 0,
+        recovered: 0,
+      });
+    });
 
-  const mockCasesByType = [
-    { name: 'Phishing', value: 45 },
-    { name: 'Exchange Hack', value: 35 },
-    { name: 'Lost Keys', value: 25 },
-    { name: 'Scam', value: 55 },
-    { name: 'Other', value: 15 },
-  ];
+    return Array.from(trendMap.values()).slice(-10);
+  }, [trendsData]);
 
-  const displayStats = stats || mockStats;
-  const displayTrend = Array.isArray(casesTrend) ? casesTrend : mockTrend;
-  const displayAgentPerformance = Array.isArray(agentPerformance) ? agentPerformance : mockAgentPerformance;
+  // Cases by status for pie chart
+  const casesByStatus = useMemo(() => {
+    if (!casesReport?.byStatus) return [];
+    return casesReport.byStatus.map((item: any) => ({
+      name: item.status?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown',
+      value: parseInt(item.count) || 0,
+    }));
+  }, [casesReport]);
+
+  // Cases by type for pie chart
+  const casesByType = useMemo(() => {
+    if (!casesReport?.byType) return [];
+    return casesReport.byType.map((item: any) => ({
+      name: item.type?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown',
+      value: parseInt(item.count) || 0,
+    }));
+  }, [casesReport]);
+
+  // Recovery by type
+  const recoveryByType = useMemo(() => {
+    if (!recoveryData?.byType) return [];
+    return recoveryData.byType.map((item: any) => ({
+      name: item.type?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown',
+      value: parseFloat(item.amount) || 0,
+      count: parseInt(item.count) || 0,
+    }));
+  }, [recoveryData]);
+
+  // Users by role
+  const usersByRole = useMemo(() => {
+    if (!usersReport?.byRole) return [];
+    return usersReport.byRole.map((item: any) => ({
+      name: item.role?.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) || 'Unknown',
+      value: parseInt(item.count) || 0,
+    }));
+  }, [usersReport]);
 
   const exportReport = () => {
-    // Generate CSV export
-    const data = displayTrend.map((item: any) => ({
-      Date: item.date,
-      'New Cases': item.newCases,
-      'Resolved Cases': item.resolved,
-      'Recovered Amount': item.recovered,
-    }));
-
+    const data = displayTrend.length > 0 ? displayTrend : [{ date: 'No data', newCases: 0, resolved: 0, recovered: 0 }];
+    
     const csv = [
-      Object.keys(data[0]).join(','),
-      ...data.map((row: any) => Object.values(row).join(',')),
+      'Date,New Cases,Resolved Cases,Recovered Amount',
+      ...data.map((item: any) => `${item.date},${item.newCases},${item.resolved},${item.recovered}`),
     ].join('\n');
 
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -329,83 +396,85 @@ export default function ReportsPage() {
               </div>
             </div>
             <div className="mt-2 flex items-center flex-wrap">
-              {displayStats.resolutionChange <= 0 ? (
-                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
-              ) : (
-                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
-              )}
-              <span
-                className={cn(
-                  'ml-1 text-xs sm:text-sm',
-                  displayStats.resolutionChange <= 0 ? 'text-green-500' : 'text-red-500'
-                )}
-              >
-                {Math.abs(displayStats.resolutionChange)}%
+              <span className="text-xs sm:text-sm text-gray-500">
+                {displayStats.successRate}% success rate
               </span>
-              <span className="ml-1 text-xs sm:text-sm text-gray-500 hidden sm:inline">faster</span>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Loading indicator */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-500" />
+          <span className="ml-2 text-gray-500">Loading reports...</span>
+        </div>
+      )}
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Cases Trend</CardTitle>
-            <CardDescription>New vs Resolved cases over time</CardDescription>
+            <CardDescription>New cases over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={displayTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="newCases"
-                  stackId="1"
-                  stroke="#0088FE"
-                  fill="#0088FE"
-                  name="New Cases"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="resolved"
-                  stackId="2"
-                  stroke="#00C49F"
-                  fill="#00C49F"
-                  name="Resolved"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {displayTrend.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={displayTrend}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="newCases"
+                    stackId="1"
+                    stroke="#0088FE"
+                    fill="#0088FE"
+                    name="New Cases"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <BarChart3 className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No trend data available</p>
+                  <p className="text-sm text-gray-400">Cases will appear here once created</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Recovery Amount Trend</CardTitle>
-            <CardDescription>Total recovered funds over time</CardDescription>
+            <CardTitle>Recovery by Type</CardTitle>
+            <CardDescription>Total recovered funds by case type</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={displayTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis tickFormatter={(value) => `$${value / 1000}k`} />
-                <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="recovered"
-                  stroke="#8884D8"
-                  strokeWidth={2}
-                  name="Recovered Amount"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {recoveryByType.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={recoveryByType} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" tickFormatter={(value) => `$${value / 1000}k`} />
+                  <YAxis dataKey="name" type="category" width={100} />
+                  <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                  <Bar dataKey="value" fill="#10B981" name="Recovered Amount" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <Wallet className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No recovery data yet</p>
+                  <p className="text-sm text-gray-400">Recovery stats will show once cases are resolved</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -418,25 +487,35 @@ export default function ReportsPage() {
             <CardDescription>Distribution of cases by current status</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={mockCasesByStatus}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {mockCasesByStatus.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {casesByStatus.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={casesByStatus}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {casesByStatus.map((_entry: { name: string; value: number }, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <FolderOpen className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No cases data</p>
+                  <p className="text-sm text-gray-400">Status distribution will show once cases exist</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -446,84 +525,111 @@ export default function ReportsPage() {
             <CardDescription>Distribution of cases by fraud type</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={mockCasesByType} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" width={80} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#8884D8" />
-              </BarChart>
-            </ResponsiveContainer>
+            {casesByType.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={casesByType} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" />
+                  <YAxis dataKey="name" type="category" width={100} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#8884D8" name="Cases" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <FolderOpen className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No cases by type</p>
+                  <p className="text-sm text-gray-400">Type distribution will show once cases exist</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Agent Performance Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Agent Performance</CardTitle>
-          <CardDescription>Performance metrics for support agents</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead>
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Agent
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cases Handled
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Avg Resolution Time
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Satisfaction Score
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Performance
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {displayAgentPerformance.map((agent: any, index: number) => (
-                  <tr key={index}>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
-                          {agent.name
-                            .split(' ')
-                            .map((n: string) => n[0])
-                            .join('')}
-                        </div>
-                        <span className="ml-3 font-medium">{agent.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">{agent.casesHandled}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{agent.avgTime} days</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <span className="text-yellow-500">★</span>
-                        <span className="ml-1">{agent.satisfaction}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-green-500 h-2 rounded-full"
-                          style={{ width: `${(agent.casesHandled / 60) * 100}%` }}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Users by Role */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Users by Role</CardTitle>
+            <CardDescription>Distribution of users by role</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {usersByRole.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={usersByRole}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {usersByRole.map((_entry: { name: string; value: number }, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <Users className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No user data</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Security Stats */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Security Overview</CardTitle>
+            <CardDescription>2FA adoption and security stats</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {usersReport?.security ? (
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium">2FA Adoption Rate</span>
+                    <span className="text-sm font-bold text-green-600">{usersReport.security.adoptionRate}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div
+                      className="bg-green-500 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${usersReport.security.adoptionRate}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <p className="text-sm text-gray-600">2FA Enabled</p>
+                    <p className="text-2xl font-bold text-green-600">{usersReport.security.twoFactorEnabled}</p>
+                  </div>
+                  <div className="p-4 bg-red-50 rounded-lg">
+                    <p className="text-sm text-gray-600">2FA Disabled</p>
+                    <p className="text-2xl font-bold text-red-600">{usersReport.security.twoFactorDisabled}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <Users className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                  <p>No security data available</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

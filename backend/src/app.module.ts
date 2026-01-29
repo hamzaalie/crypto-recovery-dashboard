@@ -13,6 +13,7 @@ import { AuditModule } from './modules/audit/audit.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AgentModule } from './modules/agent/agent.module';
 import { FilesModule } from './modules/files/files.module';
+import { ContactModule } from './modules/contact/contact.module';
 import { HealthController, ApiHealthController } from './health.controller';
 
 @Module({
@@ -80,6 +81,7 @@ import { HealthController, ApiHealthController } from './health.controller';
     AdminModule,
     AgentModule,
     FilesModule,
+    ContactModule,
   ],
   controllers: [HealthController, ApiHealthController],
 })

@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useWalletWithLivePrices } from '@/hooks/use-coingecko';
+import { validateAddress, formatBlockchainName } from '@/lib/blockchain';
 import {
   Wallet,
   ArrowUpRight,
@@ -17,6 +19,11 @@ import {
   CheckCircle,
   XCircle,
   TrendingUp,
+  TrendingDown,
+  RefreshCw,
+  Sparkles,
+  Activity,
+  AlertCircle,
 } from 'lucide-react';
 
 interface WalletItem {
@@ -70,13 +77,20 @@ export default function WalletsPage() {
   const { toast } = useToast();
 
   // Fetch wallets
-  const { data: wallets, isLoading: walletsLoading } = useQuery<WalletItem[]>({
+  const { data: wallets, isLoading: walletsLoading, refetch: refetchWallets } = useQuery<WalletItem[]>({
     queryKey: ['my-wallets'],
     queryFn: async () => {
       const response = await api.get('/wallets');
       return Array.isArray(response.data) ? response.data : response.data?.data || [];
     },
   });
+
+  // Get live prices from CoinGecko
+  const { 
+    totalValue: liveTotalValue, 
+    wallets: walletsWithPrices, 
+    isLoading: pricesLoading 
+  } = useWalletWithLivePrices(wallets);
 
   // Fetch requests
   const { data: requestsData } = useQuery({
@@ -89,8 +103,11 @@ export default function WalletsPage() {
 
   const requests: WalletRequest[] = requestsData?.data || [];
 
-  // Calculate totals
-  const totalUsdValue = wallets?.reduce((acc, w) => acc + Number(w.usdValue || 0), 0) || 0;
+  // Calculate total 24h change
+  const total24hChange = walletsWithPrices?.reduce((sum, w) => {
+    return sum + (w.liveUsdValue * w.priceChange24h) / 100;
+  }, 0) || 0;
+  const percentChange24h = liveTotalValue > 0 ? (total24hChange / liveTotalValue) * 100 : 0;
 
   // Create request mutation
   const createRequestMutation = useMutation({
@@ -152,19 +169,61 @@ export default function WalletsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Portfolio Header */}
-      <div className="bg-gradient-to-r from-brand to-blue-600 rounded-2xl p-6 text-white">
-        <p className="text-sm opacity-80">Total Portfolio Value</p>
-        <h1 className="text-3xl sm:text-4xl font-bold mt-1">{formatCurrency(totalUsdValue)}</h1>
-        <div className="flex items-center gap-2 mt-2 text-sm opacity-80">
-          <TrendingUp className="h-4 w-4" />
-          <span>{wallets?.length || 0} Assets</span>
+      {/* Portfolio Header - Enhanced with live data */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-6 md:p-8 text-white">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
+        <div className="relative">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-5 w-5 text-brand-400" />
+                <span className="text-sm text-gray-400">Portfolio Value (Live)</span>
+                {pricesLoading && <RefreshCw className="h-4 w-4 animate-spin text-gray-500" />}
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold">{formatCurrency(liveTotalValue || 0)}</h1>
+              <div className="flex items-center gap-3 mt-3">
+                <div className={cn(
+                  "flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium",
+                  percentChange24h >= 0 
+                    ? "bg-green-500/20 text-green-400" 
+                    : "bg-red-500/20 text-red-400"
+                )}>
+                  {percentChange24h >= 0 ? (
+                    <TrendingUp className="h-4 w-4" />
+                  ) : (
+                    <TrendingDown className="h-4 w-4" />
+                  )}
+                  {percentChange24h >= 0 ? '+' : ''}{percentChange24h.toFixed(2)}%
+                </div>
+                <span className="text-gray-500 text-sm">
+                  {percentChange24h >= 0 ? '+' : ''}{formatCurrency(Math.abs(total24hChange))} today
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-start md:items-end gap-2 bg-white/5 rounded-xl px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Activity className="h-4 w-4 text-green-400" />
+                <span className="text-xs text-gray-400 uppercase tracking-wide">Live Prices</span>
+              </div>
+              <p className="text-2xl font-bold">{wallets?.length || 0}</p>
+              <p className="text-sm text-gray-400">Assets Tracked</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Wallets Grid */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">My Assets</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">My Assets</h2>
+          <button 
+            onClick={() => refetchWallets()}
+            className="text-sm text-brand-500 hover:text-brand-600 flex items-center gap-1"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
+        </div>
         {walletsLoading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -179,34 +238,67 @@ export default function WalletsPage() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {wallets.map((wallet) => {
+            {(walletsWithPrices || wallets).map((wallet: any) => {
               const crypto = getCryptoInfo(wallet.type);
+              const livePrice = wallet.livePrice || 0;
+              const liveValue = wallet.liveUsdValue || wallet.usdValue || 0;
+              const change24h = wallet.priceChange24h || 0;
+              const priceData = wallet.priceData;
+              
               return (
-                <Card key={wallet.id} className="overflow-hidden">
+                <Card key={wallet.id} className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
                     <div className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-4">
-                        <div className={cn('w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold', crypto.color)}>
-                          {crypto.icon}
-                        </div>
+                        {priceData?.image ? (
+                          <img 
+                            src={priceData.image} 
+                            alt={crypto.name}
+                            className="w-12 h-12 rounded-full"
+                          />
+                        ) : (
+                          <div className={cn('w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg', crypto.color)}>
+                            {crypto.icon}
+                          </div>
+                        )}
                         <div>
-                          <h3 className="font-semibold">{crypto.name}</h3>
-                          <p className="text-sm text-gray-500">{crypto.symbol}</p>
+                          <h3 className="font-semibold text-gray-900">{crypto.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm text-gray-500">{crypto.symbol}</p>
+                            {livePrice > 0 && (
+                              <span className="text-xs text-gray-400">
+                                @ ${livePrice < 1 ? livePrice.toFixed(4) : livePrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-lg">{formatCurrency(wallet.usdValue)}</p>
-                        <p className="text-sm text-gray-500 font-mono">
-                          {Number(wallet.tokenBalance).toFixed(6)} {crypto.symbol}
-                        </p>
+                        <p className="font-bold text-lg text-gray-900">{formatCurrency(liveValue)}</p>
+                        <div className="flex items-center justify-end gap-2">
+                          <p className="text-sm text-gray-500 font-mono">
+                            {Number(wallet.tokenBalance).toFixed(6)} {crypto.symbol}
+                          </p>
+                          {change24h !== 0 && (
+                            <span className={cn(
+                              "inline-flex items-center gap-0.5 text-xs font-medium px-1.5 py-0.5 rounded",
+                              change24h >= 0 
+                                ? "bg-green-100 text-green-700" 
+                                : "bg-red-100 text-red-700"
+                            )}>
+                              {change24h >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                              {Math.abs(change24h).toFixed(1)}%
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     
                     {/* Action Buttons */}
-                    <div className="flex border-t">
+                    <div className="flex border-t border-gray-100">
                       <button
                         onClick={() => handleOpenRequest(wallet, 'deposit')}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-green-600 hover:bg-green-50 transition-colors border-r"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-green-600 hover:bg-green-50 transition-colors border-r border-gray-100"
                         disabled={wallet.status === 'frozen'}
                       >
                         <ArrowDownLeft className="h-4 w-4" />
@@ -364,13 +456,41 @@ export default function WalletsPage() {
                 {requestType === 'withdrawal' && (
                   <div>
                     <Label>Destination Wallet Address</Label>
-                    <Input
-                      value={requestForm.walletAddress}
-                      onChange={(e) => setRequestForm({ ...requestForm, walletAddress: e.target.value })}
-                      placeholder="Enter your external wallet address"
-                      required
-                      className="mt-1 font-mono text-sm"
-                    />
+                    <div className="relative">
+                      <Input
+                        value={requestForm.walletAddress}
+                        onChange={(e) => setRequestForm({ ...requestForm, walletAddress: e.target.value })}
+                        placeholder="Enter your external wallet address"
+                        required
+                        className={cn(
+                          "mt-1 font-mono text-sm pr-10",
+                          requestForm.walletAddress.length >= 10 && (
+                            validateAddress(requestForm.walletAddress).isValid
+                              ? "border-green-500"
+                              : "border-red-500"
+                          )
+                        )}
+                      />
+                      {requestForm.walletAddress.length >= 10 && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5">
+                          {validateAddress(requestForm.walletAddress).isValid ? (
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                          ) : (
+                            <AlertCircle className="h-5 w-5 text-red-500" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {requestForm.walletAddress.length >= 10 && (
+                      <p className={cn(
+                        "text-xs mt-1",
+                        validateAddress(requestForm.walletAddress).isValid ? "text-green-600" : "text-red-500"
+                      )}>
+                        {validateAddress(requestForm.walletAddress).isValid
+                          ? `✓ Valid ${formatBlockchainName(validateAddress(requestForm.walletAddress).blockchain!)} address`
+                          : validateAddress(requestForm.walletAddress).error}
+                      </p>
+                    )}
                   </div>
                 )}
 

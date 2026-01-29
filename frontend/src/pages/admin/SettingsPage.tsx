@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,12 +59,119 @@ interface SystemSettings {
   };
 }
 
+// Default settings (used as fallback)
+const defaultSettings: SystemSettings = {
+  general: {
+    siteName: 'Crypto Recovery Platform',
+    siteUrl: 'https://cryptorecovery.com',
+    supportEmail: 'support@cryptorecovery.com',
+    timezone: 'UTC',
+    dateFormat: 'YYYY-MM-DD',
+    maintenanceMode: false,
+  },
+  security: {
+    passwordMinLength: 8,
+    requireUppercase: true,
+    requireNumbers: true,
+    requireSpecialChars: true,
+    sessionTimeout: 30,
+    maxLoginAttempts: 5,
+    lockoutDuration: 15,
+    require2FA: false,
+  },
+  email: {
+    smtpHost: 'smtp.example.com',
+    smtpPort: 587,
+    smtpUser: '',
+    smtpSecure: true,
+    fromName: 'Crypto Recovery',
+    fromEmail: 'noreply@cryptorecovery.com',
+  },
+  notifications: {
+    emailNotifications: true,
+    newCaseNotification: true,
+    caseStatusUpdateNotification: true,
+    ticketResponseNotification: true,
+    dailyDigest: false,
+  },
+  api: {
+    rateLimit: 100,
+    rateLimitWindow: 60,
+    enablePublicApi: false,
+    apiKeyExpiration: 90,
+  },
+};
+
+// Parse settings from API response into structured format
+function parseSettingsFromAPI(settings: any[]): Partial<SystemSettings> {
+  const result: any = {
+    general: { ...defaultSettings.general },
+    security: { ...defaultSettings.security },
+    email: { ...defaultSettings.email },
+    notifications: { ...defaultSettings.notifications },
+    api: { ...defaultSettings.api },
+  };
+  
+  if (!Array.isArray(settings)) return result;
+  
+  settings.forEach((setting: any) => {
+    const { key, value } = setting;
+    
+    // Map API keys to form structure
+    const keyMappings: Record<string, { category: keyof SystemSettings; field: string }> = {
+      'site_name': { category: 'general', field: 'siteName' },
+      'site_url': { category: 'general', field: 'siteUrl' },
+      'support_email': { category: 'general', field: 'supportEmail' },
+      'timezone': { category: 'general', field: 'timezone' },
+      'date_format': { category: 'general', field: 'dateFormat' },
+      'maintenance_mode': { category: 'general', field: 'maintenanceMode' },
+      'password_min_length': { category: 'security', field: 'passwordMinLength' },
+      'require_uppercase': { category: 'security', field: 'requireUppercase' },
+      'require_numbers': { category: 'security', field: 'requireNumbers' },
+      'require_special_chars': { category: 'security', field: 'requireSpecialChars' },
+      'session_timeout': { category: 'security', field: 'sessionTimeout' },
+      'max_login_attempts': { category: 'security', field: 'maxLoginAttempts' },
+      'lockout_duration': { category: 'security', field: 'lockoutDuration' },
+      'two_factor_required': { category: 'security', field: 'require2FA' },
+      'smtp_host': { category: 'email', field: 'smtpHost' },
+      'smtp_port': { category: 'email', field: 'smtpPort' },
+      'smtp_user': { category: 'email', field: 'smtpUser' },
+      'smtp_secure': { category: 'email', field: 'smtpSecure' },
+      'from_name': { category: 'email', field: 'fromName' },
+      'from_email': { category: 'email', field: 'fromEmail' },
+      'email_notifications': { category: 'notifications', field: 'emailNotifications' },
+      'new_case_notification': { category: 'notifications', field: 'newCaseNotification' },
+      'case_status_update_notification': { category: 'notifications', field: 'caseStatusUpdateNotification' },
+      'ticket_response_notification': { category: 'notifications', field: 'ticketResponseNotification' },
+      'daily_digest': { category: 'notifications', field: 'dailyDigest' },
+      'rate_limit': { category: 'api', field: 'rateLimit' },
+      'rate_limit_window': { category: 'api', field: 'rateLimitWindow' },
+      'enable_public_api': { category: 'api', field: 'enablePublicApi' },
+      'api_key_expiration': { category: 'api', field: 'apiKeyExpiration' },
+    };
+    
+    const mapping = keyMappings[key];
+    if (mapping) {
+      // Convert value based on type
+      let parsedValue: any = value;
+      if (value === 'true') parsedValue = true;
+      else if (value === 'false') parsedValue = false;
+      else if (!isNaN(Number(value)) && value !== '') parsedValue = Number(value);
+      
+      result[mapping.category][mapping.field] = parsedValue;
+    }
+  });
+  
+  return result;
+}
+
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('general');
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data: _settings, isLoading: _isLoading } = useQuery<SystemSettings>({
+  // Fetch settings from API
+  const { data: settingsData } = useQuery({
     queryKey: ['system-settings'],
     queryFn: async () => {
       const response = await api.get('/admin/settings');
@@ -72,51 +179,54 @@ export default function SettingsPage() {
     },
   });
 
-  const [formData, setFormData] = useState<SystemSettings>({
-    general: {
-      siteName: 'Crypto Recovery Platform',
-      siteUrl: 'https://cryptorecovery.com',
-      supportEmail: 'support@cryptorecovery.com',
-      timezone: 'UTC',
-      dateFormat: 'YYYY-MM-DD',
-      maintenanceMode: false,
-    },
-    security: {
-      passwordMinLength: 8,
-      requireUppercase: true,
-      requireNumbers: true,
-      requireSpecialChars: true,
-      sessionTimeout: 30,
-      maxLoginAttempts: 5,
-      lockoutDuration: 15,
-      require2FA: false,
-    },
-    email: {
-      smtpHost: 'smtp.example.com',
-      smtpPort: 587,
-      smtpUser: '',
-      smtpSecure: true,
-      fromName: 'Crypto Recovery',
-      fromEmail: 'noreply@cryptorecovery.com',
-    },
-    notifications: {
-      emailNotifications: true,
-      newCaseNotification: true,
-      caseStatusUpdateNotification: true,
-      ticketResponseNotification: true,
-      dailyDigest: false,
-    },
-    api: {
-      rateLimit: 100,
-      rateLimitWindow: 60,
-      enablePublicApi: false,
-      apiKeyExpiration: 90,
-    },
-  });
+  const [formData, setFormData] = useState<SystemSettings>(defaultSettings);
+
+  // Update form when settings are loaded
+  useEffect(() => {
+    if (settingsData) {
+      const parsedSettings = parseSettingsFromAPI(settingsData);
+      setFormData(prev => ({
+        general: { ...prev.general, ...parsedSettings.general },
+        security: { ...prev.security, ...parsedSettings.security },
+        email: { ...prev.email, ...parsedSettings.email },
+        notifications: { ...prev.notifications, ...parsedSettings.notifications },
+        api: { ...prev.api, ...parsedSettings.api },
+      }));
+    }
+  }, [settingsData]);
+
+  // Convert form data back to API format
+  const formToAPIFormat = (data: Partial<SystemSettings>): { key: string; value: string }[] => {
+    const settings: { key: string; value: string }[] = [];
+    
+    if (data.general) {
+      settings.push({ key: 'site_name', value: data.general.siteName });
+      settings.push({ key: 'support_email', value: data.general.supportEmail });
+      settings.push({ key: 'timezone', value: data.general.timezone });
+      settings.push({ key: 'maintenance_mode', value: String(data.general.maintenanceMode) });
+    }
+    
+    if (data.security) {
+      settings.push({ key: 'password_min_length', value: String(data.security.passwordMinLength) });
+      settings.push({ key: 'session_timeout', value: String(data.security.sessionTimeout) });
+      settings.push({ key: 'max_login_attempts', value: String(data.security.maxLoginAttempts) });
+      settings.push({ key: 'lockout_duration', value: String(data.security.lockoutDuration) });
+      settings.push({ key: 'two_factor_required', value: String(data.security.require2FA) });
+    }
+    
+    if (data.notifications) {
+      settings.push({ key: 'email_notifications', value: String(data.notifications.emailNotifications) });
+      settings.push({ key: 'new_case_notification', value: String(data.notifications.newCaseNotification) });
+      settings.push({ key: 'daily_digest', value: String(data.notifications.dailyDigest) });
+    }
+    
+    return settings;
+  };
 
   const saveMutation = useMutation({
     mutationFn: async (data: Partial<SystemSettings>) => {
-      const response = await api.put('/admin/settings', data);
+      const apiSettings = formToAPIFormat(data);
+      const response = await api.patch('/admin/settings/bulk', { settings: apiSettings });
       return response.data;
     },
     onSuccess: () => {

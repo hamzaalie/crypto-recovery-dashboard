@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { api } from '@/lib/api';
+import { validateAddress, formatBlockchainName } from '@/lib/blockchain';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, Upload, X } from 'lucide-react';
+import { ArrowLeft, Loader2, Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
 
 const createCaseSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -35,6 +36,12 @@ const caseTypes = [
 
 export default function NewCasePage() {
   const [files, setFiles] = useState<File[]>([]);
+  const [walletValidation, setWalletValidation] = useState<{
+    isValid: boolean;
+    blockchain: string | null;
+    error?: string;
+  } | null>(null);
+  const [isUploadingFiles, setIsUploadingFiles] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -42,6 +49,7 @@ export default function NewCasePage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<CreateCaseFormData>({
     resolver: zodResolver(createCaseSchema),
@@ -49,6 +57,50 @@ export default function NewCasePage() {
       priority: 'medium',
     },
   });
+
+  // Watch wallet address for validation
+  const walletAddress = watch('walletAddress');
+  
+  // Validate wallet address when it changes
+  useEffect(() => {
+    if (walletAddress && walletAddress.trim().length >= 10) {
+      const result = validateAddress(walletAddress);
+      setWalletValidation(result);
+    } else {
+      setWalletValidation(null);
+    }
+  }, [walletAddress]);
+
+  // Upload files to server
+  const uploadFiles = async (caseId: string): Promise<void> => {
+    if (files.length === 0) return;
+    
+    setIsUploadingFiles(true);
+    
+    try {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Use the general file upload endpoint with entity type and ID
+        await api.post(`/files/upload?entityType=case&entityId=${caseId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+    } catch (error) {
+      console.error('File upload error:', error);
+      // Don't fail the case creation, just show a warning
+      toast({
+        title: 'File Upload Warning',
+        description: 'Some files could not be uploaded. You can add them later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploadingFiles(false);
+    }
+  };
 
   const createCaseMutation = useMutation({
     mutationFn: async (data: CreateCaseFormData) => {
@@ -63,7 +115,12 @@ export default function NewCasePage() {
       const response = await api.post('/cases', payload);
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // Upload files after case is created
+      if (files.length > 0) {
+        await uploadFiles(data.id);
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['cases'] });
       toast({
         title: 'Case created',
@@ -171,14 +228,41 @@ export default function NewCasePage() {
               )}
             </div>
 
-            {/* Wallet Address */}
+            {/* Wallet Address with Validation */}
             <div className="space-y-2">
               <Label htmlFor="walletAddress">Wallet Address (Optional)</Label>
-              <Input
-                id="walletAddress"
-                placeholder="Enter wallet address"
-                {...register('walletAddress')}
-              />
+              <div className="relative">
+                <Input
+                  id="walletAddress"
+                  placeholder="Enter wallet address (BTC, ETH, etc.)"
+                  className={walletValidation ? (
+                    walletValidation.isValid 
+                      ? 'border-green-500 pr-10' 
+                      : 'border-red-500 pr-10'
+                  ) : ''}
+                  {...register('walletAddress')}
+                />
+                {walletValidation && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {walletValidation.isValid ? (
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-red-500" />
+                    )}
+                  </div>
+                )}
+              </div>
+              {walletValidation && (
+                <div className={`text-sm ${walletValidation.isValid ? 'text-green-600' : 'text-red-500'}`}>
+                  {walletValidation.isValid ? (
+                    <span className="flex items-center gap-1">
+                      ✓ Valid {formatBlockchainName(walletValidation.blockchain!)} address
+                    </span>
+                  ) : (
+                    walletValidation.error
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Incident Date */}
@@ -272,11 +356,11 @@ export default function NewCasePage() {
           <Button type="button" variant="outline" onClick={() => navigate(-1)}>
             Cancel
           </Button>
-          <Button type="submit" disabled={createCaseMutation.isPending}>
-            {createCaseMutation.isPending && (
+          <Button type="submit" disabled={createCaseMutation.isPending || isUploadingFiles}>
+            {(createCaseMutation.isPending || isUploadingFiles) && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Create Case
+            {isUploadingFiles ? 'Uploading Files...' : createCaseMutation.isPending ? 'Creating...' : 'Create Case'}
           </Button>
         </div>
       </form>

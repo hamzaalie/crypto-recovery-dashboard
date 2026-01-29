@@ -66,7 +66,7 @@ export default function AgentDashboardPage() {
     queryKey: ['agent-recent-cases'],
     queryFn: async () => {
       const response = await api.get('/agent/cases?limit=5');
-      return response.data.data || response.data;
+      return response.data.data || response.data || [];
     },
   });
 
@@ -74,74 +74,22 @@ export default function AgentDashboardPage() {
     queryKey: ['agent-urgent-tickets'],
     queryFn: async () => {
       const response = await api.get('/agent/tickets?priority=HIGH&limit=5');
-      return response.data.data || response.data;
+      return response.data.data || response.data || [];
     },
   });
 
-  // Mock data for demo
-  const mockStats: AgentStats = {
-    assignedCases: 12,
-    activeCases: 8,
-    resolvedCasesToday: 3,
-    assignedTickets: 15,
-    openTickets: 7,
-    avgResponseTime: '2.5 hours',
+  // Use API data or show empty state (no mock data)
+  const displayStats: AgentStats = stats || {
+    assignedCases: 0,
+    activeCases: 0,
+    resolvedCasesToday: 0,
+    assignedTickets: 0,
+    openTickets: 0,
+    avgResponseTime: '0 hours',
   };
-
-  const mockCases: Case[] = [
-    {
-      id: '1',
-      caseNumber: 'CRV-2024-001',
-      title: 'Bitcoin wallet compromised',
-      status: 'IN_PROGRESS',
-      priority: 'HIGH',
-      createdAt: new Date().toISOString(),
-      user: { firstName: 'John', lastName: 'Doe' },
-    },
-    {
-      id: '2',
-      caseNumber: 'CRV-2024-002',
-      title: 'Lost access to exchange account',
-      status: 'PENDING',
-      priority: 'MEDIUM',
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      user: { firstName: 'Jane', lastName: 'Smith' },
-    },
-    {
-      id: '3',
-      caseNumber: 'CRV-2024-003',
-      title: 'Phishing attack investigation',
-      status: 'UNDER_REVIEW',
-      priority: 'HIGH',
-      createdAt: new Date(Date.now() - 172800000).toISOString(),
-      user: { firstName: 'Mike', lastName: 'Johnson' },
-    },
-  ];
-
-  const mockTickets: TicketItem[] = [
-    {
-      id: '1',
-      ticketNumber: 'TKT-001',
-      subject: 'Need update on case status',
-      status: 'OPEN',
-      priority: 'HIGH',
-      createdAt: new Date().toISOString(),
-      user: { firstName: 'John', lastName: 'Doe' },
-    },
-    {
-      id: '2',
-      ticketNumber: 'TKT-002',
-      subject: 'Documents uploaded for review',
-      status: 'OPEN',
-      priority: 'HIGH',
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      user: { firstName: 'Sarah', lastName: 'Williams' },
-    },
-  ];
-
-  const displayStats = stats || mockStats;
-  const displayCases = recentCases || mockCases;
-  const displayTickets = urgentTickets || mockTickets;
+  
+  const displayCases = Array.isArray(recentCases) ? recentCases : [];
+  const displayTickets = Array.isArray(urgentTickets) ? urgentTickets : [];
 
   return (
     <div className="space-y-6">
