@@ -236,7 +236,7 @@ export default function WalletsPage() {
                   ) : (
                     <>
                       <LinkIcon className="mr-2 h-4 w-4" />
-                      {hasMetaMask ? 'Connect MetaMask' : 'Install MetaMask'}
+                      Connect MetaMask
                     </>
                   )}
                 </Button>
