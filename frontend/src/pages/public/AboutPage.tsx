@@ -1,13 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import {
-  Shield,
   Users,
   Award,
   Target,
   Globe,
-  CheckCircle,
   TrendingUp,
   Lock,
   Heart,
@@ -20,61 +17,6 @@ const stats = [
   { value: '50+', label: 'Expert Team' },
   { value: '15K+', label: 'Cases Resolved' },
   { value: '30+', label: 'Countries Served' },
-];
-
-const values = [
-  {
-    icon: Shield,
-    title: 'Trust & Integrity',
-    description: 'We operate with complete transparency and maintain the highest ethical standards in everything we do.',
-  },
-  {
-    icon: Target,
-    title: 'Results-Driven',
-    description: 'Our success is measured by your success. We\'re committed to achieving the best possible outcomes for our clients.',
-  },
-  {
-    icon: Lock,
-    title: 'Security First',
-    description: 'Your privacy and security are paramount. We employ enterprise-grade security measures to protect your information.',
-  },
-  {
-    icon: Heart,
-    title: 'Client-Centric',
-    description: 'We understand the emotional toll of losing assets. Our team provides compassionate, personalized support throughout the recovery process.',
-  },
-];
-
-const team = [
-  {
-    name: 'Alexander Chen',
-    role: 'CEO & Founder',
-    bio: 'Former blockchain security lead at a major exchange. 15+ years in cybersecurity.',
-  },
-  {
-    name: 'Sarah Mitchell',
-    role: 'Chief Recovery Officer',
-    bio: 'Expert in blockchain forensics with FBI cyber division background.',
-  },
-  {
-    name: 'Michael Torres',
-    role: 'Head of Operations',
-    bio: 'Former fintech executive with extensive experience in financial recovery.',
-  },
-  {
-    name: 'Dr. Emily Patel',
-    role: 'Chief Legal Officer',
-    bio: 'Specializes in cryptocurrency law and international financial regulations.',
-  },
-];
-
-const certifications = [
-  'SOC 2 Type II Certified',
-  'ISO 27001 Certified',
-  'GDPR Compliant',
-  'Licensed & Regulated',
-  'Certified Blockchain Forensics',
-  'Member of Crypto Fraud Alliance',
 ];
 
 export default function AboutPage() {

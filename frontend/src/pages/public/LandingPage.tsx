@@ -124,11 +124,11 @@ export default function LandingPage() {
               <Link to="/contact" className="text-gray-600 hover:text-brand-600 transition">Contact</Link>
             </div>
             <div className="hidden md:flex items-center space-x-4">
-              <Link to="/login">
-                <Button variant="ghost">Log In</Button>
+              <Link to="/dashboard">
+                <Button className="bg-brand-600 hover:bg-brand-700 text-white">Dashboard</Button>
               </Link>
               <Link to="/contact">
-                <Button>Get Started</Button>
+                <Button variant="outline">Get Started</Button>
               </Link>
             </div>
             {/* Mobile menu button */}
@@ -150,11 +150,11 @@ export default function LandingPage() {
               <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Testimonials</a>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Contact</Link>
               <div className="pt-4 border-t space-y-2">
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">Log In</Button>
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white">Dashboard</Button>
                 </Link>
                 <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full">Get Started</Button>
+                  <Button variant="outline" className="w-full">Get Started</Button>
                 </Link>
               </div>
             </div>

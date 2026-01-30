@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Shield } from 'lucide-react';
 import logo from '@/assets/images/logo.png';
 
 export default function PrivacyPage() {

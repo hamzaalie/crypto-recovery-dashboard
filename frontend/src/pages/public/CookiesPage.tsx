@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, Cookie, Settings, BarChart3, Target, Lock } from 'lucide-react';
+import { Cookie, Settings, BarChart3, Target, Lock } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import logo from '@/assets/images/logo.png';
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, Home, Search, ArrowLeft, HelpCircle } from 'lucide-react';
+import { Home, Search, ArrowLeft, HelpCircle } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import logo from '@/assets/images/logo.png';
 

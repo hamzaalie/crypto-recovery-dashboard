@@ -1,81 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import {
-  Search,
   ChevronRight,
-  Shield,
   HelpCircle,
   FileText,
-  Lock,
-  CreditCard,
-  AlertTriangle,
   MessageSquare,
-  Phone,
-  Mail,
   Clock,
-  BookOpen,
-  Wallet,
-  Settings,
   Key,
 } from 'lucide-react';
 import logo from '@/assets/images/logo.png';
-
-const categories = [
-  {
-    icon: Wallet,
-    title: 'Wallet Recovery',
-    description: 'Help with lost access, seed phrases, and hardware wallets',
-    articles: 12,
-    color: 'bg-orange-100 text-orange-600',
-  },
-  {
-    icon: AlertTriangle,
-    title: 'Scam & Fraud',
-    description: 'Report scams, understand fraud types, and prevention tips',
-    articles: 18,
-    color: 'bg-red-100 text-red-600',
-  },
-  {
-    icon: FileText,
-    title: 'Cases & Claims',
-    description: 'Creating cases, tracking progress, and documentation',
-    articles: 15,
-    color: 'bg-blue-100 text-blue-600',
-  },
-  {
-    icon: Lock,
-    title: 'Account Security',
-    description: 'Two-factor auth, passwords, and protecting your account',
-    articles: 10,
-    color: 'bg-green-100 text-green-600',
-  },
-  {
-    icon: CreditCard,
-    title: 'Payments & Fees',
-    description: 'Understanding our fee structure and payment methods',
-    articles: 8,
-    color: 'bg-purple-100 text-purple-600',
-  },
-  {
-    icon: Settings,
-    title: 'Account Settings',
-    description: 'Profile, notifications, and account management',
-    articles: 11,
-    color: 'bg-gray-100 text-gray-600',
-  },
-];
-
-const popularArticles = [
-  { title: 'How to submit a new recovery case', category: 'Getting Started', views: '15.2K' },
-  { title: 'Understanding our recovery process', category: 'Cases', views: '12.8K' },
-  { title: 'What documents do I need to provide?', category: 'Documentation', views: '10.5K' },
-  { title: 'How long does recovery take?', category: 'Cases', views: '9.3K' },
-  { title: 'Setting up two-factor authentication', category: 'Security', views: '8.7K' },
-  { title: 'Common cryptocurrency scams to avoid', category: 'Security', views: '7.9K' },
-];
 
 const faqs = [
   {
@@ -105,7 +39,6 @@ const faqs = [
 ];
 
 export default function HelpPage() {
-  const [searchQuery, setSearchQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
 
   return (

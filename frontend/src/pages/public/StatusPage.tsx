@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, CheckCircle, AlertTriangle, Clock, RefreshCw, Server, Database, Globe, Lock } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Clock, RefreshCw, Server, Database, Globe, Lock } from 'lucide-react';
 import logo from '@/assets/images/logo.png';
 
 interface ServiceStatus {

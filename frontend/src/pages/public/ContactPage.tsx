@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import {
-  Shield,
   Mail,
   Phone,
   Clock,
@@ -88,8 +87,8 @@ export default function ContactPage() {
               <Link to="/help">
                 <Button variant="ghost">Help Center</Button>
               </Link>
-              <Link to="/login">
-                <Button>Log In</Button>
+              <Link to="/dashboard">
+                <Button>Dashboard</Button>
               </Link>
             </div>
           </div>

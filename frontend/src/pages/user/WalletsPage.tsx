@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useWalletWithLivePrices } from '@/hooks/use-coingecko';
+import { useWalletConnect } from '@/hooks/use-wallet-connect';
 import { validateAddress, formatBlockchainName } from '@/lib/blockchain';
 import {
   Wallet,
@@ -24,6 +25,8 @@ import {
   Sparkles,
   Activity,
   AlertCircle,
+  Link as LinkIcon,
+  ExternalLink,
 } from 'lucide-react';
 
 interface WalletItem {

@@ -22,30 +22,19 @@ import {
   Activity,
 } from 'lucide-react';
 
-interface DashboardStats {
-  totalWallets: number;
-  totalBalance: number;
-  activeCases: number;
-  openTickets: number;
-  recentActivity: {
-    type: string;
-    description: string;
-    createdAt: string;
-  }[];
-}
-
 export default function UserDashboard() {
   const { user } = useAuthStore();
 
   console.log('UserDashboard rendering, user:', user);
 
-  const { data: _stats, isLoading: _isLoading } = useQuery<DashboardStats>({
-    queryKey: ['dashboard-stats'],
-    queryFn: async () => {
-      const response = await api.get('/users/dashboard-stats');
-      return response.data;
-    },
-  });
+  // Dashboard stats endpoint - currently returns 403, using direct queries instead
+  // const { data: _stats, isLoading: _isLoading } = useQuery<DashboardStats>({
+  //   queryKey: ['dashboard-stats'],
+  //   queryFn: async () => {
+  //     const response = await api.get('/users/dashboard-stats');
+  //     return response.data;
+  //   },
+  // });
 
   const { data: wallets } = useQuery({
     queryKey: ['wallets'],
