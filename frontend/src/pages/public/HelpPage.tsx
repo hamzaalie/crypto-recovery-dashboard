@@ -134,19 +134,9 @@ export default function HelpPage() {
         <div className="max-w-4xl mx-auto text-center">
           <HelpCircle className="h-16 w-16 mx-auto mb-6 opacity-80" />
           <h1 className="text-4xl font-bold mb-4">How can we help you?</h1>
-          <p className="text-xl text-brand-100 mb-8">
-            Search our knowledge base or browse categories below
+          <p className="text-xl text-brand-100">
+            Browse categories below or contact our support team
           </p>
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search for articles, guides, and FAQs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 text-lg rounded-xl border-0 text-gray-900"
-            />
-          </div>
         </div>
       </section>
 
@@ -174,63 +164,6 @@ export default function HelpPage() {
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Browse by Category</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl ${category.color} flex items-center justify-center flex-shrink-0`}>
-                      <category.icon className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-brand-600 transition">
-                        {category.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-2">{category.description}</p>
-                      <span className="text-brand-600 text-sm font-medium">{category.articles} articles</span>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-brand-600 transition" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Articles */}
-      <section className="py-16 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Popular Articles</h2>
-            <Button variant="ghost" className="text-brand-600">
-              View all articles <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {popularArticles.map((article, index) => (
-              <div key={index} className="p-4 border rounded-lg hover:border-brand-300 hover:bg-brand-50 transition cursor-pointer group">
-                <div className="flex items-start gap-3">
-                  <BookOpen className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-medium text-gray-900 group-hover:text-brand-600 transition">{article.title}</h4>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
-                      <span>{article.category}</span>
-                      <span>•</span>
-                      <span>{article.views} views</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQs */}
       <section className="py-16 px-4">
         <div className="max-w-3xl mx-auto">
@@ -252,50 +185,6 @@ export default function HelpPage() {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-16 px-4 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Still need help?</h2>
-            <p className="text-gray-300">Our support team is available 24/7 to assist you</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-brand-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <MessageSquare className="h-8 w-8" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Live Chat</h3>
-              <p className="text-gray-400 mb-4">Chat with our support team in real-time</p>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
-                Start Chat
-              </Button>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Mail className="h-8 w-8" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Email Support</h3>
-              <p className="text-gray-400 mb-4">Get a response within 2 hours</p>
-              <Link to="/contact">
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
-                  Send Email
-                </Button>
-              </Link>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Phone className="h-8 w-8" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Phone Support</h3>
-              <p className="text-gray-400 mb-4">Speak to an expert directly</p>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
-                +1 (800) 123-4567
-              </Button>
-            </div>
           </div>
         </div>
       </section>
