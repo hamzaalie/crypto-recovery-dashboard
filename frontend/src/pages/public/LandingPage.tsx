@@ -18,6 +18,7 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import logo from '@/assets/images/logo.png';
 
 const stats = [
   { value: '$50M+', label: 'Successfully Recovered' },
@@ -114,16 +115,12 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg flex items-center justify-center">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">CryptoRecover</span>
+              <img src={logo} alt="CryptoRecover Logo" className="h-12 w-auto object-contain" />
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#services" className="text-gray-600 hover:text-brand-600 transition">Services</a>
               <a href="#how-it-works" className="text-gray-600 hover:text-brand-600 transition">How It Works</a>
               <a href="#testimonials" className="text-gray-600 hover:text-brand-600 transition">Testimonials</a>
-              <Link to="/help" className="text-gray-600 hover:text-brand-600 transition">Help Center</Link>
               <Link to="/contact" className="text-gray-600 hover:text-brand-600 transition">Contact</Link>
             </div>
             <div className="hidden md:flex items-center space-x-4">
@@ -151,7 +148,6 @@ export default function LandingPage() {
               <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Services</a>
               <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">How It Works</a>
               <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Testimonials</a>
-              <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Help Center</Link>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Contact</Link>
               <div className="pt-4 border-t space-y-2">
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
@@ -434,13 +430,13 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link to="/contact">
-              <Button size="lg" variant="secondary" className="text-lg px-8">
+              <Button size="lg" variant="secondary" className="text-lg px-8 bg-white text-brand-600 hover:bg-gray-100">
                 Start Free Evaluation
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="text-lg px-8 border-white text-white hover:bg-white hover:text-brand-600">
+              <Button size="lg" variant="outline" className="text-lg px-8 border-2 border-white text-white bg-transparent hover:bg-white hover:text-brand-600">
                 <Headphones className="mr-2 h-5 w-5" />
                 Speak to an Expert
               </Button>

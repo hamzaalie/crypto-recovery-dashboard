@@ -11,14 +11,10 @@ import {
   Shield,
   Mail,
   Phone,
-  MapPin,
   Clock,
-  MessageSquare,
   Send,
   Loader2,
   CheckCircle,
-  Globe,
-  Headphones,
 } from 'lucide-react';
 
 const contactMethods = [
@@ -37,46 +33,6 @@ const contactMethods = [
     value: '+1 (800) 123-4567',
     action: 'tel:+18001234567',
     color: 'bg-green-100 text-green-600',
-  },
-  {
-    icon: MessageSquare,
-    title: 'Live Chat',
-    description: 'Available 24/7',
-    value: 'Start a conversation',
-    action: '#',
-    color: 'bg-purple-100 text-purple-600',
-  },
-  {
-    icon: Headphones,
-    title: 'Schedule a Call',
-    description: 'Book a consultation',
-    value: 'Free 30-min call',
-    action: '#',
-    color: 'bg-orange-100 text-orange-600',
-  },
-];
-
-const offices = [
-  {
-    city: 'New York',
-    address: '350 Fifth Avenue, Suite 4200',
-    region: 'New York, NY 10118',
-    country: 'United States',
-    phone: '+1 (212) 555-0123',
-  },
-  {
-    city: 'London',
-    address: '1 Canada Square, Level 37',
-    region: 'Canary Wharf',
-    country: 'London E14 5AB, UK',
-    phone: '+44 20 7946 0958',
-  },
-  {
-    city: 'Singapore',
-    address: '1 Raffles Place, #20-61',
-    region: 'One Raffles Place',
-    country: 'Singapore 048616',
-    phone: '+65 6123 4567',
   },
 ];
 
@@ -152,31 +108,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Methods */}
-      <section className="py-12 px-4 -mt-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {contactMethods.map((method, index) => (
-              <a
-                key={index}
-                href={method.action}
-                className="block"
-              >
-                <Card className="hover:shadow-lg transition-all hover:-translate-y-1 h-full">
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-14 h-14 ${method.color} rounded-xl flex items-center justify-center mx-auto mb-4`}>
-                      <method.icon className="h-7 w-7" />
-                    </div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{method.title}</h3>
-                    <p className="text-sm text-gray-500 mb-2">{method.description}</p>
-                    <p className="text-brand-600 font-medium">{method.value}</p>
-                  </CardContent>
-                </Card>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Contact Form & Info */}
       <section className="py-12 px-4">
@@ -325,39 +257,31 @@ export default function ContactPage() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-brand-600" />
-                    Global Offices
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {offices.map((office, index) => (
-                    <div key={index} className="pb-4 border-b last:border-0 last:pb-0">
-                      <h4 className="font-semibold text-gray-900 mb-2">{office.city}</h4>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <p>{office.address}</p>
-                        <p>{office.region}</p>
-                        <p>{office.country}</p>
-                        <p className="text-brand-600">{office.phone}</p>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Map Section (Placeholder) */}
-      <section className="py-12 px-4 bg-gray-100">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-gray-200 rounded-xl h-64 flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Interactive map would be displayed here</p>
+              {/* Contact Methods */}
+              <div className="grid gap-4">
+                {contactMethods.map((method, index) => (
+                  <a
+                    key={index}
+                    href={method.action}
+                    className="block"
+                  >
+                    <Card className="hover:shadow-lg transition-all hover:-translate-y-1">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className={`w-12 h-12 ${method.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                            <method.icon className="h-6 w-6" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900 mb-1">{method.title}</h3>
+                            <p className="text-sm text-gray-500 mb-2">{method.description}</p>
+                            <p className="text-brand-600 font-medium">{method.value}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
