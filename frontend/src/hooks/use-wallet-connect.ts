@@ -58,7 +58,6 @@ export function useWalletConnect() {
         description: 'Please install MetaMask browser extension to connect your wallet.',
         variant: 'destructive',
       });
-      window.open('https://metamask.io/download/', '_blank');
       return;
     }
 
