@@ -179,7 +179,7 @@ export default function LandingPage() {
                 Recover Lost Cryptocurrency & Bitcoin Assets
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Industry-leading cryptocurrency recovery services. Our expert team uses advanced blockchain forensics to help victims of scams, theft, and lost access recover their digital assets.
+                Industry-leading <Link to="/about" className="text-brand-600 hover:underline">cryptocurrency recovery services</Link>. Our expert team uses advanced blockchain forensics to help victims of <Link to="/help" className="text-brand-600 hover:underline">scams, theft, and lost access</Link> recover their digital assets.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link to="/contact">
@@ -278,7 +278,7 @@ export default function LandingPage() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">{service.title}</h3>
                   <p className="text-gray-600 mb-4">{service.description}</p>
                   <Link to="/contact" className="inline-flex items-center text-brand-600 hover:text-brand-700 font-medium">
-                    Learn more <ChevronRight className="h-4 w-4 ml-1" />
+                    Get help <ChevronRight className="h-4 w-4 ml-1" />
                   </Link>
                 </CardContent>
               </Card>
@@ -427,9 +427,9 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Recover Your Assets?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Recover Your Lost Bitcoin & Crypto Assets?</h2>
           <p className="text-xl text-brand-100 mb-8">
-            Get a free case evaluation from our experts. No obligation, no upfront fees.
+            Get a <Link to="/contact" className="text-white underline hover:no-underline">free cryptocurrency recovery evaluation</Link> from our experts. No obligation, no upfront fees.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link to="/contact">
@@ -460,7 +460,7 @@ export default function LandingPage() {
                 <img src={logo} alt="CryptoRecover Logo" className="h-12 w-auto object-contain" />
               </div>
               <p className="text-gray-400 mb-4 max-w-sm">
-                Industry-leading cryptocurrency recovery services. Helping victims recover their digital assets since 2019.
+                Industry-leading <Link to="/about" className="text-brand-400 hover:text-brand-300">cryptocurrency recovery services</Link>. Helping victims <Link to="/help" className="text-brand-400 hover:text-brand-300">recover their digital assets</Link> since 2019.
               </p>
               <div className="flex gap-4">
                 <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition">
