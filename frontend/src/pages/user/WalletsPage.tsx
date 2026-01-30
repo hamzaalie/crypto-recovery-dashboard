@@ -76,6 +76,17 @@ export default function WalletsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // Wallet connection hook
+  const {
+    wallet: connectedWallet,
+    isConnected,
+    isConnecting,
+    hasMetaMask,
+    connectWallet,
+    disconnectWallet,
+    switchToTestnet,
+  } = useWalletConnect();
+
   // Fetch wallets
   const { data: wallets, isLoading: walletsLoading, refetch: refetchWallets } = useQuery<WalletItem[]>({
     queryKey: ['my-wallets'],
@@ -169,6 +180,134 @@ export default function WalletsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Wallet Connection Card */}
+      <Card className="border-2 border-brand-200 bg-gradient-to-r from-brand-50 to-blue-50">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-brand-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <LinkIcon className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  {isConnected ? 'Wallet Connected' : 'Connect Your Wallet'}
+                </h3>
+                {isConnected && connectedWallet ? (
+                  <div className="space-y-1">
+                    <p className="text-sm text-gray-600">
+                      {connectedWallet.address.slice(0, 6)}...{connectedWallet.address.slice(-4)}
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={cn(
+                        "text-xs px-2 py-1 rounded-full",
+                        connectedWallet.isTestnet 
+                          ? "bg-yellow-100 text-yellow-700" 
+                          : "bg-green-100 text-green-700"
+                      )}>
+                        {connectedWallet.network}
+                      </span>
+                      <span className="text-xs text-gray-600">
+                        Balance: {connectedWallet.balance} ETH
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-600">
+                    Connect MetaMask to perform test transactions on testnets
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              {!isConnected ? (
+                <Button 
+                  onClick={connectWallet} 
+                  disabled={isConnecting}
+                  className="whitespace-nowrap"
+                >
+                  {isConnecting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      {hasMetaMask ? 'Connect MetaMask' : 'Install MetaMask'}
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <>
+                  {!connectedWallet?.isTestnet && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => switchToTestnet(11155111)}
+                    >
+                      Switch to Sepolia
+                    </Button>
+                  )}
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={disconnectWallet}
+                  >
+                    Disconnect
+                  </Button>
+                </>
+              )}
+              <a
+                href="https://faucets.chain.link/sepolia"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="ghost" size="sm">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Get Test ETH
+                </Button>
+              </a>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Info Alert for Testing */}
+      {isConnected && connectedWallet?.isTestnet && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex gap-3">
+            <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-medium text-blue-900 mb-1">Testing Mode Active</h4>
+              <p className="text-sm text-blue-700 mb-2">
+                You're connected to a testnet. You can now test deposits and withdrawals without using real funds.
+              </p>
+              <div className="flex flex-wrap gap-2 text-sm">
+                <a
+                  href="https://faucets.chain.link/sepolia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
+                >
+                  Get Sepolia ETH
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <span className="text-blue-400">•</span>
+                <a
+                  href="https://sepolia.etherscan.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
+                >
+                  View on Explorer
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Portfolio Header - Enhanced with live data */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-6 md:p-8 text-white">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
