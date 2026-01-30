@@ -454,10 +454,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg flex items-center justify-center">
-                  <Shield className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">CryptoRecover</span>
+                <img src={logo} alt="CryptoRecover Logo" className="h-12 w-auto object-contain" />
               </div>
               <p className="text-gray-400 mb-4 max-w-sm">
                 Industry-leading cryptocurrency recovery services. Helping victims recover their digital assets since 2019.

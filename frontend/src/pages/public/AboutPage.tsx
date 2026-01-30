@@ -13,6 +13,7 @@ import {
   Heart,
   Briefcase,
 } from 'lucide-react';
+import logo from '@/assets/images/logo.png';
 
 const stats = [
   { value: '2019', label: 'Founded' },
@@ -84,10 +85,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg flex items-center justify-center">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">CryptoRecover</span>
+              <img src={logo} alt="CryptoRecover Logo" className="h-12 w-auto object-contain" />
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/help">
@@ -181,79 +179,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-20 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              The principles that guide everything we do
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition">
-                <CardContent className="pt-8 pb-6">
-                  <div className="w-16 h-16 bg-brand-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <value.icon className="h-8 w-8 text-brand-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{value.title}</h3>
-                  <p className="text-gray-600 text-sm">{value.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Leadership */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Leadership Team</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Meet the experts leading our mission
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="hover:shadow-lg transition">
-                <CardContent className="pt-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-brand-400 to-brand-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-white text-2xl font-bold">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 text-center">{member.name}</h3>
-                  <p className="text-brand-600 text-sm text-center mb-3">{member.role}</p>
-                  <p className="text-gray-600 text-sm text-center">{member.bio}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Certifications */}
-      <section className="py-20 px-4 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Certifications & Compliance</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              We maintain the highest industry standards to protect our clients
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {certifications.map((cert, index) => (
-              <div key={index} className="bg-gray-800 rounded-lg p-4 text-center">
-                <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                <p className="text-sm font-medium">{cert}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="py-20 px-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white">
         <div className="max-w-4xl mx-auto text-center">
@@ -274,10 +199,7 @@ export default function AboutPage() {
       <footer className="bg-gray-900 text-gray-400 py-8 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg flex items-center justify-center">
-              <Shield className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-bold text-white">CryptoRecover</span>
+            <img src={logo} alt="CryptoRecover Logo" className="h-8 w-auto object-contain" />
           </div>
           <div className="flex flex-wrap justify-center gap-6 text-sm">
             <Link to="/terms" className="hover:text-white transition">Terms</Link>
