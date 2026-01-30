@@ -121,6 +121,8 @@ export default function LandingPage() {
               <a href="#services" className="text-gray-600 hover:text-brand-600 transition">Services</a>
               <a href="#how-it-works" className="text-gray-600 hover:text-brand-600 transition">How It Works</a>
               <a href="#testimonials" className="text-gray-600 hover:text-brand-600 transition">Testimonials</a>
+              <Link to="/about" className="text-gray-600 hover:text-brand-600 transition">About</Link>
+              <Link to="/help" className="text-gray-600 hover:text-brand-600 transition">Help</Link>
               <Link to="/contact" className="text-gray-600 hover:text-brand-600 transition">Contact</Link>
             </div>
             <div className="hidden md:flex items-center space-x-4">
@@ -148,6 +150,8 @@ export default function LandingPage() {
               <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Services</a>
               <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">How It Works</a>
               <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Testimonials</a>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">About</Link>
+              <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Help</Link>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Contact</Link>
               <div className="pt-4 border-t space-y-2">
                 <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
@@ -172,8 +176,7 @@ export default function LandingPage() {
                 Trusted by 15,000+ clients worldwide
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                Recover Your
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-700"> Lost Crypto</span> Assets
+                Professional Cryptocurrency Recovery Services - Recover Lost Bitcoin, Ethereum & Digital Assets
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Industry-leading cryptocurrency recovery services. Our expert team uses advanced blockchain forensics to help victims of scams, theft, and lost access recover their digital assets.
