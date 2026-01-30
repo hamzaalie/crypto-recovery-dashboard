@@ -51,44 +51,8 @@ export function NotificationCenter() {
   const { data: notifications = [], isLoading } = useQuery<Notification[]>({
     queryKey: ['notifications'],
     queryFn: async () => {
-      try {
-        const response = await api.get('/notifications');
-        return response.data;
-      } catch {
-        // Return mock data if API doesn't exist yet
-        return [
-          {
-            id: '1',
-            type: 'success',
-            category: 'case',
-            title: 'Case Update',
-            message: 'Your case #12345 has been assigned to an agent',
-            read: false,
-            createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-            link: '/cases/12345',
-          },
-          {
-            id: '2',
-            type: 'info',
-            category: 'ticket',
-            title: 'New Response',
-            message: 'Support team replied to your ticket',
-            read: false,
-            createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-            link: '/tickets/1',
-          },
-          {
-            id: '3',
-            type: 'warning',
-            category: 'wallet',
-            title: 'Verification Needed',
-            message: 'Please verify your withdrawal address',
-            read: true,
-            createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-            link: '/wallets',
-          },
-        ] as Notification[];
-      }
+      const response = await api.get('/notifications');
+      return Array.isArray(response.data) ? response.data : response.data?.data || [];
     },
     refetchInterval: 30000, // Refetch every 30 seconds
   });
