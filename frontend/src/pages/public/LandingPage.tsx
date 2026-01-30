@@ -176,7 +176,7 @@ export default function LandingPage() {
                 Trusted by 15,000+ clients worldwide
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                Professional Cryptocurrency Recovery Services - Recover Lost Bitcoin, Ethereum & Digital Assets
+                Recover Lost Cryptocurrency & Bitcoin Assets
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Industry-leading cryptocurrency recovery services. Our expert team uses advanced blockchain forensics to help victims of scams, theft, and lost access recover their digital assets.
@@ -263,9 +263,9 @@ export default function LandingPage() {
       <section id="services" className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Recovery Services</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Cryptocurrency Recovery Services</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Comprehensive cryptocurrency recovery solutions tailored to your specific situation
+              Expert Bitcoin, Ethereum, and digital asset recovery solutions tailored to your situation
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -291,9 +291,9 @@ export default function LandingPage() {
       <section id="how-it-works" className="py-20 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Bitcoin Recovery Process</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our streamlined process ensures fast and efficient recovery of your digital assets
+              Our proven cryptocurrency recovery process ensures fast results
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -380,9 +380,9 @@ export default function LandingPage() {
       <section id="testimonials" className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Our Clients Say</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Crypto Recovery Success Stories</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Thousands of satisfied clients have successfully recovered their assets with our help
+              Real clients who recovered stolen Bitcoin, Ethereum, and digital assets
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
