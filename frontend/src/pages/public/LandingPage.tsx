@@ -110,32 +110,30 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b">
+      {/* Navigation - More Professional */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <img src={logo} alt="CryptoRecover Logo" className="h-12 w-auto object-contain" />
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center">
+              <img src={logo} alt="CryptoRecover" className="h-14 w-auto object-contain" />
             </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#services" className="text-gray-600 hover:text-brand-600 transition">Services</a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-brand-600 transition">How It Works</a>
-              <a href="#testimonials" className="text-gray-600 hover:text-brand-600 transition">Testimonials</a>
-              <Link to="/about" className="text-gray-600 hover:text-brand-600 transition">About</Link>
-              <Link to="/help" className="text-gray-600 hover:text-brand-600 transition">Help</Link>
-              <Link to="/contact" className="text-gray-600 hover:text-brand-600 transition">Contact</Link>
+            <div className="hidden lg:flex items-center space-x-8">
+              <a href="#services" className="text-sm font-medium text-gray-700 hover:text-brand-600 transition">Our Services</a>
+              <a href="#how-it-works" className="text-sm font-medium text-gray-700 hover:text-brand-600 transition">How It Works</a>
+              <a href="#testimonials" className="text-sm font-medium text-gray-700 hover:text-brand-600 transition">Client Reviews</a>
+              <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-brand-600 transition">About Us</Link>
+              <Link to="/help" className="text-sm font-medium text-gray-700 hover:text-brand-600 transition">Support</Link>
             </div>
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-3">
               <Link to="/dashboard">
-                <Button className="bg-brand-600 hover:bg-brand-700 text-white">Dashboard</Button>
+                <Button variant="outline" size="sm" className="font-medium">Sign In</Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline">Get Started</Button>
+                <Button size="sm" className="bg-brand-600 hover:bg-brand-700 text-white font-medium px-6">Get Started</Button>
               </Link>
             </div>
-            {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -143,22 +141,20 @@ export default function LandingPage() {
           </div>
         </div>
         
-        {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t">
+          <div className="lg:hidden bg-white border-t">
             <div className="px-4 py-4 space-y-3">
-              <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Services</a>
-              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">How It Works</a>
-              <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Testimonials</a>
-              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">About</Link>
-              <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Help</Link>
-              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-gray-600 hover:text-brand-600">Contact</Link>
+              <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Our Services</a>
+              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">How It Works</a>
+              <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Client Reviews</a>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">About Us</Link>
+              <Link to="/help" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-medium text-gray-700">Support</Link>
               <div className="pt-4 border-t space-y-2">
                 <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white">Dashboard</Button>
+                  <Button variant="outline" className="w-full">Sign In</Button>
                 </Link>
                 <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">Get Started</Button>
+                  <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white">Get Started</Button>
                 </Link>
               </div>
             </div>
@@ -166,118 +162,108 @@ export default function LandingPage() {
         )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section - Professional Design */}
+      <section className="pt-32 pb-20 px-4 bg-gradient-to-br from-gray-50 via-white to-brand-50">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center px-4 py-2 bg-brand-50 text-brand-700 rounded-full text-sm font-medium mb-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <div className="inline-flex items-center px-4 py-2 bg-white border border-brand-200 rounded-full text-sm font-medium text-brand-700 shadow-sm">
                 <Award className="h-4 w-4 mr-2" />
                 Trusted by 15,000+ clients worldwide
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Recover Lost Cryptocurrency & Bitcoin Assets
               </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Industry-leading <Link to="/about" className="text-brand-600 hover:underline">cryptocurrency recovery services</Link>. Our expert team uses advanced blockchain forensics to help victims of <Link to="/help" className="text-brand-600 hover:underline">scams, theft, and lost access</Link> recover their digital assets.
+              <p className="text-xl text-gray-600 leading-relaxed">
+                Industry-leading <Link to="/about" className="text-brand-600 hover:underline font-medium">cryptocurrency recovery services</Link>. Our expert team uses advanced blockchain forensics to help victims of <Link to="/help" className="text-brand-600 hover:underline font-medium">scams, theft, and lost access</Link> recover their digital assets.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link to="/contact">
-                  <Button size="lg" className="w-full sm:w-auto text-lg px-8">
-                    Start Recovery
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/contact" className="inline-block">
+                  <Button size="lg" className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white text-base px-8 py-6 h-auto font-semibold shadow-lg hover:shadow-xl transition-all">
+                    Start Your Recovery
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link to="/contact">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8">
+                <Link to="/contact" className="inline-block">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-base px-8 py-6 h-auto font-semibold border-2">
                     Free Consultation
                   </Button>
                 </Link>
               </div>
-              <div className="flex items-center gap-6 text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  No upfront fees
+              <div className="flex flex-wrap items-center gap-6 pt-4">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium">No upfront fees</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  Free case review
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium">98% success rate</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  Confidential
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium">24/7 support</span>
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="relative z-10 bg-white rounded-2xl shadow-2xl p-8 border">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-semibold text-gray-900">Recovery Dashboard</h3>
-                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Live</span>
-                </div>
-                <div className="space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-gray-500">Case #CR-2024-15847</span>
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Recovered</span>
+            <div className="relative hidden lg:block">
+              <div className="relative z-10">
+                <img 
+                  src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1200&auto=format&fit=crop" 
+                  alt="Cryptocurrency Recovery" 
+                  className="rounded-2xl shadow-2xl"
+                />
+                <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl border">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
                     </div>
-                    <p className="text-lg font-semibold">$45,000 BTC</p>
-                    <div className="w-full bg-green-200 rounded-full h-2 mt-2">
-                      <div className="bg-green-500 h-2 rounded-full w-full"></div>
-                    </div>
-                  </div>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-gray-500">Case #CR-2024-15923</span>
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">In Progress</span>
-                    </div>
-                    <p className="text-lg font-semibold">$28,500 ETH</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div className="bg-brand-500 h-2 rounded-full w-[65%]"></div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">$50M+</p>
+                      <p className="text-sm text-gray-600">Successfully Recovered</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 w-72 h-72 bg-brand-100 rounded-full blur-3xl opacity-50"></div>
-              <div className="absolute -bottom-4 -left-4 w-72 h-72 bg-green-100 rounded-full blur-3xl opacity-50"></div>
+              <div className="absolute top-1/2 right-0 w-72 h-72 bg-brand-200/30 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl"></div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-gray-900 text-white">
+      {/* Stats Section - Clean & Professional */}
+      <section className="py-20 bg-white border-y">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold mb-2">{stat.value}</div>
-                <div className="text-gray-400">{stat.label}</div>
+                <div className="text-4xl md:text-5xl font-bold text-brand-600 mb-2">{stat.value}</div>
+                <div className="text-sm font-medium text-gray-600 uppercase tracking-wide">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-20 px-4">
+      {/* Services Section - Card Layout */}
+      <section id="services" className="py-24 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Cryptocurrency Recovery Services</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Cryptocurrency Recovery Services</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Expert Bitcoin, Ethereum, and digital asset recovery solutions tailored to your situation
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((service, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow duration-300 border-2 hover:border-brand-200">
-                <CardContent className="p-6">
-                  <div className={`w-14 h-14 rounded-xl ${service.color} flex items-center justify-center mb-4`}>
-                    <service.icon className="h-7 w-7" />
+              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-brand-200 bg-white">
+                <CardContent className="p-8">
+                  <div className={`w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                    <service.icon className="h-8 w-8" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{service.title}</h3>
-                  <p className="text-gray-600 mb-4">{service.description}</p>
-                  <Link to="/contact" className="inline-flex items-center text-brand-600 hover:text-brand-700 font-medium">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
+                  <Link to="/contact" className="inline-flex items-center text-brand-600 hover:text-brand-700 font-semibold text-sm">
                     Get help <ChevronRight className="h-4 w-4 ml-1" />
                   </Link>
                 </CardContent>
@@ -287,121 +273,67 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="how-it-works" className="py-20 px-4 bg-gray-50">
+      {/* How It Works - Timeline Style */}
+      <section id="how-it-works" className="py-24 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Bitcoin Recovery Process</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Bitcoin Recovery Process</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our proven cryptocurrency recovery process ensures fast results
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {howItWorks.map((item, index) => (
               <div key={index} className="relative">
-                <div className="text-6xl font-bold text-brand-100 mb-4">{item.step}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-700 text-white rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-6 shadow-lg">
+                    {item.step}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                </div>
                 {index < howItWorks.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 right-0 w-1/2 h-0.5 bg-brand-200"></div>
+                  <div className="hidden lg:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-brand-300 to-transparent"></div>
                 )}
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Security Section */}
-      <section className="py-20 px-4 bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Bank-Grade Security</h2>
-              <p className="text-xl text-gray-300 mb-8">
-                Your security is our top priority. We employ enterprise-level security measures to protect your data and recovery process.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Lock className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">End-to-End Encryption</h4>
-                    <p className="text-gray-400">All data is encrypted in transit and at rest using AES-256 encryption</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Shield className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">Two-Factor Authentication</h4>
-                    <p className="text-gray-400">Mandatory 2FA for all accounts with multiple authentication options</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Users className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1">Verified Team</h4>
-                    <p className="text-gray-400">Background-checked specialists with blockchain forensics certifications</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800 rounded-xl p-6 text-center">
-                <Globe className="h-10 w-10 mx-auto mb-4 text-brand-400" />
-                <div className="text-2xl font-bold mb-1">SOC 2</div>
-                <div className="text-gray-400 text-sm">Type II Certified</div>
-              </div>
-              <div className="bg-gray-800 rounded-xl p-6 text-center">
-                <Shield className="h-10 w-10 mx-auto mb-4 text-green-400" />
-                <div className="text-2xl font-bold mb-1">GDPR</div>
-                <div className="text-gray-400 text-sm">Compliant</div>
-              </div>
-              <div className="bg-gray-800 rounded-xl p-6 text-center">
-                <Lock className="h-10 w-10 mx-auto mb-4 text-blue-400" />
-                <div className="text-2xl font-bold mb-1">ISO 27001</div>
-                <div className="text-gray-400 text-sm">Certified</div>
-              </div>
-              <div className="bg-gray-800 rounded-xl p-6 text-center">
-                <Award className="h-10 w-10 mx-auto mb-4 text-yellow-400" />
-                <div className="text-2xl font-bold mb-1">Licensed</div>
-                <div className="text-gray-400 text-sm">Regulated Entity</div>
-              </div>
-            </div>
+          <div className="text-center mt-16">
+            <Link to="/contact">
+              <Button size="lg" className="bg-brand-600 hover:bg-brand-700 text-white px-10 py-6 h-auto text-base font-semibold shadow-lg">
+                Start Your Recovery Today
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
-
-      {/* Testimonials */}
-      <section id="testimonials" className="py-20 px-4">
+      {/* Testimonials - Professional Grid */}
+      <section id="testimonials" className="py-24 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Crypto Recovery Success Stories</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Crypto Recovery Success Stories</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Real clients who recovered stolen Bitcoin, Ethereum, and digital assets
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex gap-1 mb-4">
+              <Card key={index} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-brand-200 bg-white">
+                <CardContent className="p-8">
+                  <div className="flex gap-1 mb-6">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-gray-600 mb-6">"{testimonial.content}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center">
-                      <span className="text-brand-600 font-semibold">{testimonial.name[0]}</span>
+                  <p className="text-gray-700 mb-6 leading-relaxed text-lg">"{testimonial.content}"</p>
+                  <div className="flex items-center gap-4 pt-6 border-t">
+                    <div className="w-14 h-14 bg-gradient-to-br from-brand-500 to-brand-700 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xl">{testimonial.name[0]}</span>
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                      <div className="text-sm text-gray-500">{testimonial.role}</div>
+                      <p className="font-bold text-gray-900">{testimonial.name}</p>
+                      <p className="text-sm text-gray-600">{testimonial.role}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -412,108 +344,112 @@ export default function LandingPage() {
       </section>
 
       {/* Trust Badges */}
-      <section className="py-12 bg-gray-50 border-y">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Trusted & Certified</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {trustedBy.map((item, index) => (
-              <div key={index} className="text-gray-400 font-semibold text-lg">
-                {item}
+              <div key={index} className="text-center">
+                <div className="text-sm font-semibold text-gray-600 uppercase tracking-wider">{item}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-brand-600 to-brand-700 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Recover Your Lost Bitcoin & Crypto Assets?</h2>
-          <p className="text-xl text-brand-100 mb-8">
-            Get a <Link to="/contact" className="text-white underline hover:no-underline">free cryptocurrency recovery evaluation</Link> from our experts. No obligation, no upfront fees.
+      {/* CTA Section - Professional */}
+      <section className="py-24 px-4 bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 text-white">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Recover Your Lost Bitcoin & Crypto Assets?</h2>
+          <p className="text-xl text-brand-100 mb-10 leading-relaxed">
+            Get a <Link to="/contact" className="text-white underline hover:no-underline font-semibold">free cryptocurrency recovery evaluation</Link> from our experts. No obligation, no upfront fees.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link to="/contact">
-              <Button size="lg" variant="secondary" className="text-lg px-8 bg-white text-brand-600 hover:bg-gray-100">
-                Start Free Evaluation
+              <Button size="lg" className="w-full sm:w-auto bg-white text-brand-600 hover:bg-gray-100 px-10 py-6 h-auto text-base font-bold shadow-xl">
+                Get Free Evaluation
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="text-lg px-8 border-2 border-white text-white bg-transparent hover:bg-white hover:text-brand-600">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-6 h-auto text-base font-bold">
                 <Headphones className="mr-2 h-5 w-5" />
-                Speak to an Expert
+                Call 24/7 Support
               </Button>
             </Link>
           </div>
-          <p className="mt-6 text-brand-200 text-sm">
-            Average response time: Under 2 hours
+          <p className="mt-8 text-brand-200 text-sm font-medium">
+            ✓ Response within 2 hours  •  ✓ No upfront fees  •  ✓ 98% success rate
           </p>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-16 px-4">
+      {/* Footer - Professional & Clean */}
+      <footer className="bg-gray-900 text-gray-300 py-20 px-4 border-t border-gray-800">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
             <div className="lg:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <img src={logo} alt="CryptoRecover Logo" className="h-12 w-auto object-contain" />
+              <div className="mb-6">
+                <img src={logo} alt="CryptoRecover Logo" className="h-14 w-auto object-contain" />
               </div>
-              <p className="text-gray-400 mb-4 max-w-sm">
-                Industry-leading <Link to="/about" className="text-brand-400 hover:text-brand-300">cryptocurrency recovery services</Link>. Helping victims <Link to="/help" className="text-brand-400 hover:text-brand-300">recover their digital assets</Link> since 2019.
+              <p className="text-gray-400 mb-6 max-w-sm leading-relaxed">
+                Industry-leading <Link to="/about" className="text-brand-400 hover:text-brand-300 font-medium">cryptocurrency recovery services</Link>. Helping victims <Link to="/help" className="text-brand-400 hover:text-brand-300 font-medium">recover their digital assets</Link> since 2019.
               </p>
-              <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition">
+              <div className="flex gap-3">
+                <a href="#" className="w-11 h-11 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-brand-600 transition-colors">
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition">
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm3 8h-1.35c-.538 0-.65.221-.65.778v1.222h2l-.209 2h-1.791v7h-3v-7h-2v-2h2v-2.308c0-1.769.931-2.692 3.029-2.692h1.971v3z"/></svg>
-                </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition">
+                <a href="#" className="w-11 h-11 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-brand-600 transition-colors">
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                 </a>
               </div>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Services</h4>
-              <ul className="space-y-2">
-                <li><Link to="/contact" className="hover:text-white transition">Wallet Recovery</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition">Scam Recovery</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition">Theft Investigation</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition">Exchange Issues</Link></li>
+              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Services</h4>
+              <ul className="space-y-3">
+                <li><Link to="/contact" className="hover:text-white transition text-sm">Wallet Recovery</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition text-sm">Scam Recovery</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition text-sm">Theft Investigation</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition text-sm">Exchange Issues</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Support</h4>
-              <ul className="space-y-2">
-                <li><Link to="/help" className="hover:text-white transition">Help Center</Link></li>
-                <li><Link to="/contact" className="hover:text-white transition">Contact Us</Link></li>
-                <li><Link to="/help" className="hover:text-white transition">FAQs</Link></li>
-                <li><Link to="/status" className="hover:text-white transition">Service Status</Link></li>
+              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Support</h4>
+              <ul className="space-y-3">
+                <li><Link to="/help" className="hover:text-white transition text-sm">Help Center</Link></li>
+                <li><Link to="/contact" className="hover:text-white transition text-sm">Contact Us</Link></li>
+                <li><Link to="/help" className="hover:text-white transition text-sm">FAQs</Link></li>
+                <li><Link to="/status" className="hover:text-white transition text-sm">Service Status</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2">
-                <li><Link to="/terms" className="hover:text-white transition">Terms of Service</Link></li>
-                <li><Link to="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
-                <li><Link to="/cookies" className="hover:text-white transition">Cookie Policy</Link></li>
-                <li><Link to="/about" className="hover:text-white transition">About Us</Link></li>
+              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Company</h4>
+              <ul className="space-y-3">
+                <li><Link to="/about" className="hover:text-white transition text-sm">About Us</Link></li>
+                <li><Link to="/terms" className="hover:text-white transition text-sm">Terms of Service</Link></li>
+                <li><Link to="/privacy" className="hover:text-white transition text-sm">Privacy Policy</Link></li>
+                <li><Link to="/cookies" className="hover:text-white transition text-sm">Cookie Policy</Link></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm">
+          <div className="border-t border-gray-800 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-gray-500 text-sm">
               © {new Date().getFullYear()} CryptoRecover. All rights reserved.
             </p>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="flex items-center gap-2">
-                <Lock className="h-4 w-4 text-green-400" />
-                256-bit SSL Secured
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
+              <span className="flex items-center gap-2 text-gray-500">
+                <Lock className="h-4 w-4 text-green-500" />
+                <span className="font-medium">256-bit SSL Secured</span>
               </span>
-              <span className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-blue-400" />
-                GDPR Compliant
+              <span className="flex items-center gap-2 text-gray-500">
+                <Shield className="h-4 w-4 text-blue-500" />
+                <span className="font-medium">GDPR Compliant</span>
+              </span>
+              <span className="flex items-center gap-2 text-gray-500">
+                <Award className="h-4 w-4 text-yellow-500" />
+                <span className="font-medium">SOC 2 Certified</span>
               </span>
             </div>
           </div>
