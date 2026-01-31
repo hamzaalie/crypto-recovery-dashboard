@@ -14,6 +14,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'heading': ['Satoshi', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        'sans': ['General Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+      },
       colors: {
         brand: {
           DEFAULT: '#007ac2',
