@@ -287,7 +287,7 @@ export default function LandingPage() {
           <div className="hidden lg:block relative overflow-hidden">
             <div 
               className="flex gap-6 transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${currentSlide * (100 / 3 + 2)}%)` }}
+              style={{ transform: `translateX(-${Math.min(currentSlide, 1) * 34.2}%)` }}
             >
               {services.map((service, index) => (
                 <div key={index} className="flex-shrink-0" style={{ width: 'calc(33.333% - 16px)' }}>
@@ -314,7 +314,7 @@ export default function LandingPage() {
           <div className="hidden md:block lg:hidden relative overflow-hidden">
             <div 
               className="flex gap-6 transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${currentSlide * 52}%)` }}
+              style={{ transform: `translateX(-${Math.min(currentSlide, 2) * 52}%)` }}
             >
               {services.map((service, index) => (
                 <div key={index} className="flex-shrink-0" style={{ width: 'calc(50% - 12px)' }}>
@@ -341,7 +341,7 @@ export default function LandingPage() {
           <div className="md:hidden relative overflow-hidden">
             <div 
               className="flex gap-4 transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              style={{ transform: `translateX(-${Math.min(currentSlide, 3) * 100}%)` }}
             >
               {services.map((service, index) => (
                 <div key={index} className="flex-shrink-0 w-full">

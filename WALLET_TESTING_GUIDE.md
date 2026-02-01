@@ -34,7 +34,10 @@ The wallet page currently shows **demo/test functionality**. To make it fully fu
 - **RPC URL**: `https://rpc.sepolia.org`
 - **Chain ID**: `11155111`
 - **Currency**: SepoliaETH
-- **Explorer**: https://sepolia.etherscan.io/
+- **Explorer**: https://sepolia.etherscan.io/\
+
+
+s done with the crypto recovery things
 
 #### 2. **Mumbai (Polygon Testnet)**
 - **Network Name**: Mumbai
