@@ -298,8 +298,10 @@ export default function LandingPage() {
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
-                      <Link to="/contact" className="inline-flex items-center text-brand-600 hover:text-brand-700 font-semibold text-sm">
-                        Get help <ChevronRight className="h-4 w-4 ml-1" />
+                      <Link to="/contact">
+                        <button className="w-full px-6 py-3 border-2 border-gray-900 rounded-full text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300">
+                          Get help
+                        </button>
                       </Link>
                     </CardContent>
                   </Card>
@@ -323,8 +325,10 @@ export default function LandingPage() {
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
-                      <Link to="/contact" className="inline-flex items-center text-brand-600 hover:text-brand-700 font-semibold text-sm">
-                        Get help <ChevronRight className="h-4 w-4 ml-1" />
+                      <Link to="/contact">
+                        <button className="w-full px-6 py-3 border-2 border-gray-900 rounded-full text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300">
+                          Get help
+                        </button>
                       </Link>
                     </CardContent>
                   </Card>
@@ -348,8 +352,10 @@ export default function LandingPage() {
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
-                      <Link to="/contact" className="inline-flex items-center text-brand-600 hover:text-brand-700 font-semibold text-sm">
-                        Get help <ChevronRight className="h-4 w-4 ml-1" />
+                      <Link to="/contact">
+                        <button className="w-full px-6 py-3 border-2 border-gray-900 rounded-full text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300">
+                          Get help
+                        </button>
                       </Link>
                     </CardContent>
                   </Card>
