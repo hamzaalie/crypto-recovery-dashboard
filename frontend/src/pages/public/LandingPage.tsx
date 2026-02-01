@@ -384,7 +384,7 @@ export default function LandingPage() {
 
           {/* Slide Indicators */}
           <div className="flex justify-center gap-2 mt-6">
-            {[0, 1, 2].map((index) => (
+            {[0, 1].map((index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
@@ -493,16 +493,16 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link to="/contact">
-              <Button size="lg" className="w-full sm:w-auto bg-white text-brand-600 hover:bg-gray-100 px-10 py-3 h-auto text-base font-bold shadow-xl flex items-center justify-center">
+              <button className="w-full sm:w-auto bg-white text-brand-600 hover:bg-gray-100 px-10 py-4 text-base font-bold shadow-xl rounded-lg flex items-center justify-center">
                 Get Free Evaluation
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              </button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-3 h-auto text-base font-bold flex items-center justify-center">
+              <button className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-4 text-base font-bold rounded-lg flex items-center justify-center">
                 <Headphones className="mr-2 h-5 w-5" />
                 Call 24/7 Support
-              </Button>
+              </button>
             </Link>
           </div>
           <p className="mt-8 text-brand-200 text-sm font-medium">
