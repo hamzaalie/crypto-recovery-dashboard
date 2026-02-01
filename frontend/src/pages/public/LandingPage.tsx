@@ -189,13 +189,13 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/contact" className="inline-block">
-                  <Button size="lg" className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white text-base px-8 py-6 h-auto font-semibold shadow-lg hover:shadow-xl transition-all">
+                  <Button size="lg" className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white text-base px-8 py-3 h-auto font-semibold shadow-lg hover:shadow-xl transition-all">
                     Start Your Recovery
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/contact" className="inline-block">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-base px-8 py-6 h-auto font-semibold border-2">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-base px-8 py-3 h-auto font-semibold border-2">
                     Free Consultation
                   </Button>
                 </Link>
@@ -299,7 +299,7 @@ export default function LandingPage() {
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
                       <Link to="/contact">
-                        <button className="w-full px-6 py-3 border-2 border-gray-900 rounded-full text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300">
+                        <button className="w-full px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-900 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
                           Get help
                         </button>
                       </Link>
@@ -326,7 +326,7 @@ export default function LandingPage() {
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
                       <Link to="/contact">
-                        <button className="w-full px-6 py-3 border-2 border-gray-900 rounded-full text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300">
+                        <button className="w-full px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-900 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
                           Get help
                         </button>
                       </Link>
@@ -353,7 +353,7 @@ export default function LandingPage() {
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
                       <Link to="/contact">
-                        <button className="w-full px-6 py-3 border-2 border-gray-900 rounded-full text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all duration-300">
+                        <button className="w-full px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-900 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
                           Get help
                         </button>
                       </Link>
@@ -493,13 +493,13 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link to="/contact">
-              <Button size="lg" className="w-full sm:w-auto bg-white text-brand-600 hover:bg-gray-100 px-10 py-6 h-auto text-base font-bold shadow-xl">
+              <Button size="lg" className="w-full sm:w-auto bg-white text-brand-600 hover:bg-gray-100 px-10 py-3 h-auto text-base font-bold shadow-xl">
                 Get Free Evaluation
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-6 h-auto text-base font-bold">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-3 h-auto text-base font-bold">
                 <Headphones className="mr-2 h-5 w-5" />
                 Call 24/7 Support
               </Button>
