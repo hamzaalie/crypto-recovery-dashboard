@@ -268,17 +268,17 @@ export default function LandingPage() {
             <div className="hidden lg:flex gap-3">
               <button
                 onClick={prevSlide}
-                className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
+                className="w-12 h-12 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
                 aria-label="Previous slide"
               >
-                <ChevronLeft className="h-6 w-6" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
               <button
                 onClick={nextSlide}
-                className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
+                className="w-12 h-12 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
                 aria-label="Next slide"
               >
-                <ChevronRight className="h-6 w-6" />
+                <ChevronRight className="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -368,23 +368,23 @@ export default function LandingPage() {
           <div className="flex lg:hidden justify-center gap-3 mt-8">
             <button
               onClick={prevSlide}
-              className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
+              className="w-12 h-12 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
               aria-label="Previous slide"
             >
-              <ChevronLeft className="h-6 w-6" />
+              <ChevronLeft className="h-5 w-5" />
             </button>
             <button
               onClick={nextSlide}
-              className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
+              className="w-12 h-12 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
               aria-label="Next slide"
             >
-              <ChevronRight className="h-6 w-6" />
+              <ChevronRight className="h-5 w-5" />
             </button>
           </div>
 
           {/* Slide Indicators */}
           <div className="flex justify-center gap-2 mt-6">
-            {services.map((_, index) => (
+            {[0, 1, 2].map((index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
@@ -493,13 +493,13 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link to="/contact">
-              <Button size="lg" className="w-full sm:w-auto bg-white text-brand-600 hover:bg-gray-100 px-10 py-3 h-auto text-base font-bold shadow-xl">
+              <Button size="lg" className="w-full sm:w-auto bg-white text-brand-600 hover:bg-gray-100 px-10 py-3 h-auto text-base font-bold shadow-xl flex items-center justify-center">
                 Get Free Evaluation
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-3 h-auto text-base font-bold">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-brand-600 px-10 py-3 h-auto text-base font-bold flex items-center justify-center">
                 <Headphones className="mr-2 h-5 w-5" />
                 Call 24/7 Support
               </Button>
