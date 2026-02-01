@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Shield,
-  Users,
   CheckCircle,
   ArrowRight,
   Lock,
@@ -12,7 +11,6 @@ import {
   FileSearch,
   Headphones,
   Award,
-  Globe,
   ChevronRight,
   ChevronLeft,
   Star,
@@ -109,12 +107,6 @@ const trustedBy = [
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const slidesToShow = {
-    mobile: 1,
-    tablet: 2,
-    desktop: 3
-  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => 
@@ -246,7 +238,26 @@ export default function LandingPage() {
               </div>
               <div className="absolute top-1/2 right-0 w-72 h-72 bg-brand-200/30 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl"></div>
-            </div>Slider */}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section - Clean & Professional */}
+      <section className="py-20 bg-white border-y">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-4xl md:text-5xl font-bold text-brand-600 mb-2">{stat.value}</div>
+                <div className="text-sm font-medium text-gray-600 uppercase tracking-wide">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section - Slider */}
       <section id="services" className="py-24 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-16">
@@ -377,26 +388,7 @@ export default function LandingPage() {
                   currentSlide === index ? 'w-8 bg-gray-900' : 'w-2 bg-gray-300'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
-              /Name="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Cryptocurrency Recovery Services</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Expert Bitcoin, Ethereum, and digital asset recovery solutions tailored to your situation
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
-              <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-brand-200 bg-white">
-                <CardContent className="p-8">
-                  <div className={`w-16 h-16 rounded-2xl ${service.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                    <service.icon className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
-                  <Link to="/contact" className="inline-flex items-center text-brand-600 hover:text-brand-700 font-semibold text-sm">
-                    Get help <ChevronRight className="h-4 w-4 ml-1" />
-                  </Link>
-                </CardContent>
-              </Card>
+              />
             ))}
           </div>
         </div>
