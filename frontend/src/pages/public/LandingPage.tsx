@@ -108,16 +108,14 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  const maxSlide = services.length - 1;
+
   const nextSlide = () => {
-    setCurrentSlide((prev) => 
-      prev + 1 >= services.length - 2 ? 0 : prev + 1
-    );
+    setCurrentSlide((prev) => (prev + 1) % services.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => 
-      prev - 1 < 0 ? services.length - 3 : prev - 1
-    );
+    setCurrentSlide((prev) => (prev - 1 + services.length) % services.length);
   };
 
   return (
@@ -270,14 +268,14 @@ export default function LandingPage() {
             <div className="hidden lg:flex gap-3">
               <button
                 onClick={prevSlide}
-                className="w-12 h-12 rounded-full border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300"
+                className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <button
                 onClick={nextSlide}
-                className="w-12 h-12 rounded-full border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300"
+                className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
                 aria-label="Next slide"
               >
                 <ChevronRight className="h-6 w-6" />
@@ -364,14 +362,14 @@ export default function LandingPage() {
           <div className="flex lg:hidden justify-center gap-3 mt-8">
             <button
               onClick={prevSlide}
-              className="w-12 h-12 rounded-full border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300"
+              className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
               aria-label="Previous slide"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
             <button
               onClick={nextSlide}
-              className="w-12 h-12 rounded-full border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300"
+              className="w-14 h-14 rounded-lg border-2 border-gray-900 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300 shadow-sm"
               aria-label="Next slide"
             >
               <ChevronRight className="h-6 w-6" />
