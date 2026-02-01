@@ -108,14 +108,14 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const maxSlide = services.length - 1;
+  const maxSlideDesktop = 1; // Shows 3 cards at a time, so only 2 positions needed for 4 cards
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % services.length);
+    setCurrentSlide((prev) => Math.min(prev + 1, maxSlideDesktop));
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + services.length) % services.length);
+    setCurrentSlide((prev) => Math.max(prev - 1, 0));
   };
 
   return (
