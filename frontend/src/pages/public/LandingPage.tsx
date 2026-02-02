@@ -16,6 +16,7 @@ import {
   Star,
   Menu,
   X,
+  HelpCircle,
 } from 'lucide-react';
 import logo from '@/assets/images/logo.png';
 
@@ -480,6 +481,97 @@ export default function LandingPage() {
                 <div className="text-sm font-semibold text-gray-600 uppercase tracking-wider">{item}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Support Section */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-12 text-center">Customer Support</h2>
+          
+          {/* Help and Guidance Banner */}
+          <div className="bg-brand-600 rounded-2xl p-6 md:p-8 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <HelpCircle className="h-7 w-7 text-white" />
+              </div>
+              <div className="text-white">
+                <h3 className="text-xl font-bold mb-1">Help and guidance</h3>
+                <p className="text-brand-100 text-sm md:text-base">Looking for help? Use the information and guides from our help and guidance hub to find what you need.</p>
+              </div>
+            </div>
+            <Link to="/help" className="flex-shrink-0">
+              <button className="px-6 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-brand-600 transition-all duration-300 whitespace-nowrap">
+                Help and guidance
+              </button>
+            </Link>
+          </div>
+
+          {/* Support Cards Grid */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Card 1 - Recovery Services */}
+            <div className="bg-white rounded-2xl p-8 border-2 border-gray-100 hover:border-brand-200 hover:shadow-lg transition-all duration-300">
+              <div className="w-14 h-14 bg-brand-100 rounded-xl flex items-center justify-center mb-6">
+                <Wallet className="h-7 w-7 text-brand-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Making recovery easier</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                We're introducing more ways you can manage your recovery cases, track progress, and communicate with our team in one place.
+              </p>
+              <Link to="/dashboard" className="inline-flex items-center text-brand-600 font-semibold hover:text-brand-700 transition group">
+                Case management
+                <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            {/* Card 2 - Latest Scams */}
+            <div className="bg-white rounded-2xl p-8 border-2 border-gray-100 hover:border-brand-200 hover:shadow-lg transition-all duration-300">
+              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                <Shield className="h-7 w-7 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Learn about the latest scams</h3>
+              <p className="text-gray-600 mb-2 leading-relaxed">
+                Fraudsters are always looking for new ways to try to steal your details and crypto.
+              </p>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Discover which scams are common right now, how they work and the steps you can take to stay safe.
+              </p>
+              <Link to="/help" className="inline-flex items-center text-brand-600 font-semibold hover:text-brand-700 transition group">
+                See the latest scams
+                <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            {/* Card 3 - Expert Consultation */}
+            <div className="bg-white rounded-2xl p-8 border-2 border-gray-100 hover:border-brand-200 hover:shadow-lg transition-all duration-300">
+              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                <Headphones className="h-7 w-7 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Plan with confidence. Protect what matters</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Feel reassured knowing expert support is available for you, every step of the way with our recovery consultation service.
+              </p>
+              <Link to="/contact" className="inline-flex items-center text-brand-600 font-semibold hover:text-brand-700 transition group">
+                Book a consultation
+                <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            {/* Card 4 - 24/7 Support */}
+            <div className="bg-white rounded-2xl p-8 border-2 border-gray-100 hover:border-brand-200 hover:shadow-lg transition-all duration-300">
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                <FileSearch className="h-7 w-7 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Extra support when you need it</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Learn how we are making it easier to recover your assets. Find out about the different kinds of support we provide, and how to get in touch.
+              </p>
+              <Link to="/contact" className="inline-flex items-center text-brand-600 font-semibold hover:text-brand-700 transition group">
+                How we can support you
+                <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
