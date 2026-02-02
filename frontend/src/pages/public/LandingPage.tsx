@@ -218,11 +218,88 @@ export default function LandingPage() {
             </div>
             <div className="relative hidden lg:block">
               <div className="relative z-10">
-                <img 
-                  src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1200&auto=format&fit=crop" 
-                  alt="Cryptocurrency Recovery" 
-                  className="rounded-2xl shadow-2xl"
-                />
+                {/* Dashboard Mockup Graphic */}
+                <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-gray-950 rounded-2xl shadow-2xl p-6 border border-gray-700">
+                  {/* Dashboard Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-gray-700/50 rounded-lg">
+                      <Lock className="h-3 w-3 text-green-400" />
+                      <span className="text-xs text-gray-400">Secure Connection</span>
+                    </div>
+                  </div>
+                  
+                  {/* Dashboard Content */}
+                  <div className="space-y-4">
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-gray-700/40 rounded-xl p-4 border border-gray-600/30">
+                        <div className="text-xs text-gray-400 mb-1">Total Recovered</div>
+                        <div className="text-xl font-bold text-white">$2.4M</div>
+                        <div className="text-xs text-green-400">↑ 12.5%</div>
+                      </div>
+                      <div className="bg-gray-700/40 rounded-xl p-4 border border-gray-600/30">
+                        <div className="text-xs text-gray-400 mb-1">Active Cases</div>
+                        <div className="text-xl font-bold text-white">24</div>
+                        <div className="text-xs text-brand-400">Processing</div>
+                      </div>
+                      <div className="bg-gray-700/40 rounded-xl p-4 border border-gray-600/30">
+                        <div className="text-xs text-gray-400 mb-1">Success Rate</div>
+                        <div className="text-xl font-bold text-white">98%</div>
+                        <div className="text-xs text-green-400">Excellent</div>
+                      </div>
+                    </div>
+
+                    {/* Chart Placeholder */}
+                    <div className="bg-gray-700/40 rounded-xl p-4 border border-gray-600/30">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-300">Recovery Progress</span>
+                        <span className="text-xs text-gray-500">Last 7 days</span>
+                      </div>
+                      <div className="flex items-end gap-2 h-20">
+                        <div className="flex-1 bg-brand-600/60 rounded-t-sm" style={{height: '40%'}}></div>
+                        <div className="flex-1 bg-brand-600/60 rounded-t-sm" style={{height: '60%'}}></div>
+                        <div className="flex-1 bg-brand-600/60 rounded-t-sm" style={{height: '45%'}}></div>
+                        <div className="flex-1 bg-brand-600/60 rounded-t-sm" style={{height: '80%'}}></div>
+                        <div className="flex-1 bg-brand-600/60 rounded-t-sm" style={{height: '65%'}}></div>
+                        <div className="flex-1 bg-brand-600/60 rounded-t-sm" style={{height: '90%'}}></div>
+                        <div className="flex-1 bg-brand-500 rounded-t-sm" style={{height: '100%'}}></div>
+                      </div>
+                    </div>
+
+                    {/* Recent Activity */}
+                    <div className="bg-gray-700/40 rounded-xl p-4 border border-gray-600/30">
+                      <div className="text-sm font-medium text-gray-300 mb-3">Recent Activity</div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                            <CheckCircle className="h-4 w-4 text-green-400" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm text-white">Case #1247 Completed</div>
+                            <div className="text-xs text-gray-500">2.5 BTC recovered</div>
+                          </div>
+                          <div className="text-xs text-gray-500">2m ago</div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-brand-500/20 rounded-lg flex items-center justify-center">
+                            <FileSearch className="h-4 w-4 text-brand-400" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm text-white">New case submitted</div>
+                            <div className="text-xs text-gray-500">Under review</div>
+                          </div>
+                          <div className="text-xs text-gray-500">15m ago</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl border">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
